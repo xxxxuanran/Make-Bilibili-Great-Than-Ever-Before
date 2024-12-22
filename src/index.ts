@@ -29,18 +29,18 @@ import type { MakeBilibiliGreatThanEverBeforeHook, MakeBilibiliGreatThanEverBefo
   ];
 
   const styles: string[] = [];
-  const onBeforeFetchHooks: OnBeforeFetchHook[] = [];
-  const onResponses: Array<(response: Response) => Response> = [];
+  const onBeforeFetchHooks = new Set<OnBeforeFetchHook>();
+  const onResponseHooks = new Set<(response: Response) => Response>();
 
   const hook: MakeBilibiliGreatThanEverBeforeHook = {
     addStyle(style: string) {
       styles.push(style);
     },
     onBeforeFetch(cb) {
-      onBeforeFetchHooks.push(cb);
+      onBeforeFetchHooks.add(cb);
     },
     onResponse(cb) {
-      onResponses.push(cb);
+      onResponseHooks.add(cb);
     }
   };
 
@@ -82,11 +82,11 @@ import type { MakeBilibiliGreatThanEverBeforeHook, MakeBilibiliGreatThanEverBefo
 
   // Override fetch
   (($fetch) => {
-    unsafeWindow.fetch = function (...args) {
+    unsafeWindow.fetch = function (...fetchArgs) {
       let abortFetch = false;
       let mockResponse: Response | null = null;
       for (const obBeforeFetch of onBeforeFetchHooks) {
-        const result = obBeforeFetch(args);
+        const result = obBeforeFetch(fetchArgs);
         if (result === null) {
           abortFetch = true;
           break;
@@ -95,18 +95,23 @@ import type { MakeBilibiliGreatThanEverBeforeHook, MakeBilibiliGreatThanEverBefo
           mockResponse = result;
           break;
         }
-        args = result;
+        fetchArgs = result;
       }
 
       if (abortFetch) {
         let resp = mockResponse ?? new Response();
-        for (const onResponse of onResponses) {
+        for (const onResponse of onResponseHooks) {
           resp = onResponse(resp);
         }
         return Promise.resolve(resp);
       }
 
-      return Reflect.apply($fetch, this, args);
+      return Reflect.apply($fetch, this, fetchArgs).then((response) => {
+        for (const onResponse of onResponseHooks) {
+          response = onResponse(response);
+        }
+        return response;
+      });
     };
     // eslint-disable-next-line @typescript-eslint/unbound-method -- call with Reflect.apply
   })(unsafeWindow.fetch);
