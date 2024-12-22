@@ -6,5 +6,5 @@ export interface MakeBilibiliGreatThanEverBeforeModule {
 }
 
 export interface MakeBilibiliGreatThanEverBeforeHook {
-  addStyle(css: string): void
+  addStyle(this: void, css: string): void
 };
