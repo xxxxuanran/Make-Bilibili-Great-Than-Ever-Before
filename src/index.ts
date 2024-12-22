@@ -30,6 +30,7 @@ import type { MakeBilibiliGreatThanEverBeforeHook, MakeBilibiliGreatThanEverBefo
 
   const styles: string[] = [];
   const onBeforeFetchHooks: OnBeforeFetchHook[] = [];
+  const onResponses: Array<(response: Response) => Response> = [];
 
   const hook: MakeBilibiliGreatThanEverBeforeHook = {
     addStyle(style: string) {
@@ -37,6 +38,9 @@ import type { MakeBilibiliGreatThanEverBeforeHook, MakeBilibiliGreatThanEverBefo
     },
     onBeforeFetch(cb) {
       onBeforeFetchHooks.push(cb);
+    },
+    onResponse(cb) {
+      onResponses.push(cb);
     }
   };
 
@@ -95,7 +99,11 @@ import type { MakeBilibiliGreatThanEverBeforeHook, MakeBilibiliGreatThanEverBefo
       }
 
       if (abortFetch) {
-        return Promise.resolve(mockResponse ?? new Response());
+        let resp = mockResponse ?? new Response();
+        for (const onResponse of onResponses) {
+          resp = onResponse(resp);
+        }
+        return Promise.resolve(resp);
       }
 
       return Reflect.apply($fetch, this, args);

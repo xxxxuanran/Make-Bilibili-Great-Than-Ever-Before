@@ -12,5 +12,6 @@ export type OnBeforeFetchHook = (fetchArgs: [requestInfo: RequestInfo | URL, req
 
 export interface MakeBilibiliGreatThanEverBeforeHook {
   addStyle(this: void, css: string): void,
-  onBeforeFetch(this: void, cb: OnBeforeFetchHook): void
+  onBeforeFetch(this: void, cb: OnBeforeFetchHook): void,
+  onResponse(this: void, cb: (response: Response) => Response): void
 };
