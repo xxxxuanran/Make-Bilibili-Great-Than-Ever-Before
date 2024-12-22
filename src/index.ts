@@ -20,7 +20,7 @@ import type { MakeBilibiliGreatThanEverBeforeHook, MakeBilibiliGreatThanEverBefo
     enhanceLive,
     fixCopyInCV,
     noAd,
-    noP2P(),
+    noP2P,
     noWebRTC,
     optimizeHomepage,
     optimizeStory,
