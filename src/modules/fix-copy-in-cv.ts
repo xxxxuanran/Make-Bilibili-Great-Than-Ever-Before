@@ -1,4 +1,5 @@
 import { noop } from 'foxts/noop';
+import type { MakeBilibiliGreatThanEverBeforeModule } from '../types';
 
 // 修复文章复制
 declare global {
@@ -9,7 +10,7 @@ declare global {
   }
 }
 
-export default function fixCopyInCV() {
+export default function fixCopyInCV(): MakeBilibiliGreatThanEverBeforeModule {
   if (location.href.startsWith('https://www.bilibili.com/read/cv')) {
     if (unsafeWindow.original) {
       Object.defineProperty(unsafeWindow.original, 'reprint', {
@@ -25,4 +26,6 @@ export default function fixCopyInCV() {
     document.querySelector('.article-holder')?.classList.remove('unable-reprint');
     document.querySelector('.article-holder')?.addEventListener('copy', e => e.stopImmediatePropagation(), true);
   }
+
+  return {};
 }

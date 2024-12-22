@@ -1,4 +1,5 @@
 import { logger } from '../logger';
+import type { MakeBilibiliGreatThanEverBeforeModule } from '../types';
 
 // 清理 URL 中的无用参数
 const uselessUrlParams = [
@@ -15,7 +16,7 @@ const uselessUrlParams = [
   /^spm/
 ];
 
-export default function removeUselessUrlParams() {
+export default function removeUselessUrlParams(): MakeBilibiliGreatThanEverBeforeModule {
   unsafeWindow.history.replaceState(undefined, '', removeTracking(location.href));
 
   // eslint-disable-next-line @typescript-eslint/unbound-method -- called with Reflect.apply
@@ -29,6 +30,8 @@ export default function removeUselessUrlParams() {
   unsafeWindow.history.replaceState = function (state, unused, url) {
     return Reflect.apply(replaceState, this, [state, unused, removeTracking(url)]);
   };
+
+  return {};
 }
 
 function removeTracking(url: string | URL | null | undefined) {

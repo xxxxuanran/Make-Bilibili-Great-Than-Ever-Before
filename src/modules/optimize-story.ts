@@ -1,8 +1,9 @@
 // 动态页面优化
 
+import type { MakeBilibiliGreatThanEverBeforeModule } from '../types';
 import { addStyle } from '../utils/add-style';
 
-export default function optimizeStory() {
+export default function optimizeStory(): MakeBilibiliGreatThanEverBeforeModule {
   if (location.host === 't.bilibili.com') {
     addStyle('html[wide] #app { display: flex; } html[wide] .bili-dyn-home--member { box-sizing: border-box;padding: 0 10px;width: 100%;flex: 1; } html[wide] .bili-dyn-content { width: initial; } html[wide] main { margin: 0 8px;flex: 1;overflow: hidden;width: initial; } #wide-mode-switch { margin-left: 0;margin-right: 20px; } .bili-dyn-list__item:has(.bili-dyn-card-goods), .bili-dyn-list__item:has(.bili-rich-text-module.goods) { display: none !important }');
     if (!localStorage.WIDE_OPT_OUT) {
@@ -30,4 +31,6 @@ export default function optimizeStory() {
       tabContainer?.appendChild(switchButton);
     });
   }
+
+  return {};
 }

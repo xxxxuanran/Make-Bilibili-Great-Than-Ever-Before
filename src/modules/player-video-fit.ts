@@ -1,7 +1,8 @@
+import type { MakeBilibiliGreatThanEverBeforeModule } from '../types';
 import { addStyle } from '../utils/add-style';
 
 // 播放器视频裁切
-export default function playerVideoFit() {
+export default function playerVideoFit(): MakeBilibiliGreatThanEverBeforeModule {
   if (location.href.startsWith('https://www.bilibili.com/video/')) {
     addStyle('body[video-fit] #bilibili-player video { object-fit: cover; } .bpx-player-ctrl-setting-fit-mode { display: flex;width: 100%;height: 32px;line-height: 32px; } .bpx-player-ctrl-setting-box .bui-panel-wrap, .bpx-player-ctrl-setting-box .bui-panel-item { min-height: 172px !important; }');
     let timer: number;
@@ -30,4 +31,6 @@ export default function playerVideoFit() {
     }
     timer = self.setInterval(injectButton, 200);
   }
+
+  return {};
 }

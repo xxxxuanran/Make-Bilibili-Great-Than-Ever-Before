@@ -1,8 +1,9 @@
 import { noop } from 'foxts/noop';
 import { logger } from '../logger';
+import type { MakeBilibiliGreatThanEverBeforeModule } from '../types';
 
 // 防止叔叔用 P2P CDN 省下纸钱
-export default function noP2P() {
+export default function noP2P(): MakeBilibiliGreatThanEverBeforeModule {
   class MockPCDNLoader { }
 
   class MockBPP2PSDK {
@@ -92,6 +93,8 @@ export default function noP2P() {
       };
     }(globalThis.fetch));
   }
+
+  return {};
 }
 
 function replaceP2P(url: URL, cdnDomain = 'upos-sz-mirrorcoso1.bilivideo.com') {

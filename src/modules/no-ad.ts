@@ -1,4 +1,5 @@
 // 防止叔叔通过广告给自己赚棺材钱
+import type { MakeBilibiliGreatThanEverBeforeModule } from '../types';
 import { addStyle } from '../utils/add-style';
 
 declare global {
@@ -12,7 +13,7 @@ declare global {
   }
 }
 
-export default function noAd() {
+export default function noAd(): MakeBilibiliGreatThanEverBeforeModule {
   // 去广告
   addStyle('.ad-report, a[href*="cm.bilibili.com"] { display: none !important; }');
 
@@ -29,4 +30,6 @@ export default function noAd() {
   if (unsafeWindow.__INITIAL_STATE__?.elecFullInfo) {
     unsafeWindow.__INITIAL_STATE__.elecFullInfo.list = [];
   }
+
+  return {};
 }

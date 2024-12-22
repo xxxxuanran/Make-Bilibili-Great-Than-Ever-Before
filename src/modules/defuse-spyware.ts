@@ -3,6 +3,7 @@
 import { noop, trueFn } from 'foxts/noop';
 import { getUrlFromRequest } from '../utils/get-url-from-request';
 import { createMockClass } from '../utils/mock-class';
+import type { MakeBilibiliGreatThanEverBeforeModule } from '../types';
 
 declare global {
   interface Window {
@@ -11,7 +12,7 @@ declare global {
   }
 }
 
-export default function defuseSpyware() {
+export default function defuseSpyware(): MakeBilibiliGreatThanEverBeforeModule {
   (($fetch) => {
     unsafeWindow.fetch = function (...args) {
       const url = getUrlFromRequest(args[0]);
@@ -106,4 +107,6 @@ export default function defuseSpyware() {
   });
   Object.defineProperty(unsafeWindow, '__USER_FP_CONFIG__', { get: noop, set: noop, configurable: false, enumerable: true });
   Object.defineProperty(unsafeWindow, '__MIRROR_CONFIG__', { get: noop, set: noop, configurable: false, enumerable: true });
+
+  return {};
 }

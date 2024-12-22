@@ -1,4 +1,5 @@
 // 增强直播（原画画质、其他修复）
+import type { MakeBilibiliGreatThanEverBeforeModule } from '../types';
 import { addStyle } from '../utils/add-style';
 import { getUrlFromRequest } from '../utils/get-url-from-request';
 
@@ -11,7 +12,7 @@ declare global {
 // const mcdnRegexp = /[\dxy]+\.mcdn\.bilivideo\.cn:\d+/;
 const qualityRegexp = /(live-bvc\/\d+\/live_\d+_\d+)_\w+/;
 
-export default function enhanceLive() {
+export default function enhanceLive(): MakeBilibiliGreatThanEverBeforeModule {
   let forceHighestQuality = true;
 
   if (location.href.startsWith('https://live.bilibili.com/')) {
@@ -61,4 +62,6 @@ export default function enhanceLive() {
     // 去台标
     addStyle('.web-player-icon-roomStatus { display: none !important; }');
   }
+
+  return {};
 }

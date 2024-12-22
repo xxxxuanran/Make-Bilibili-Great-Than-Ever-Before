@@ -2,10 +2,11 @@
 
 import { noop } from 'foxts/noop';
 import { logger } from '../logger';
+import type { MakeBilibiliGreatThanEverBeforeModule } from '../types';
 
 // based on uBlock Origin's no-webrtc
 // https://github.com/gorhill/uBlock/blob/6c228a8bfdcfc14140cdd3967270df28598c1aaf/src/js/resources/scriptlets.js#L2216
-export default function noWebRTC() {
+export default function noWebRTC(): MakeBilibiliGreatThanEverBeforeModule {
   const rtcPcNames: string[] = [];
 
   if ('RTCPeerConnection' in unsafeWindow) {
@@ -16,10 +17,6 @@ export default function noWebRTC() {
   }
   if ('mozRTCPeerConnection' in unsafeWindow) {
     rtcPcNames.push('mozRTCPeerConnection');
-  }
-
-  if (rtcPcNames.length === 0) {
-    return;
   }
 
   const rtcDcNames: string[] = [];
@@ -89,4 +86,6 @@ export default function noWebRTC() {
       enumerable: true
     });
   }
+
+  return {};
 }
