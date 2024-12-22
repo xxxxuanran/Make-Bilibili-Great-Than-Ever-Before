@@ -4,7 +4,10 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "lint": "eslint --format=sukka .",
+    "build": "rollup -c rollup.config.ts --configPlugin swc3",
+    "prerelease": "pnpm run lint && pnpm run build",
+    "release": "bumpp -r --all --commit \"release: %s\" --tag \"%s\""
   },
   "keywords": [],
   "author": "",
@@ -16,6 +19,7 @@
     "@rollup/plugin-replace": "^6.0.2",
     "@swc/core": "^1.10.1",
     "@types/node": "^22.10.2",
+    "bumpp": "^9.9.2",
     "eslint": "^9.17.0",
     "eslint-config-sukka": "^6.13.0",
     "eslint-formatter-sukka": "^6.13.0",
