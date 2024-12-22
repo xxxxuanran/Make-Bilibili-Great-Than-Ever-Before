@@ -7,6 +7,10 @@ settings:
 importers:
 
   .:
+    dependencies:
+      foxts:
+        specifier: ^1.0.11
+        version: 1.0.11
     devDependencies:
       '@eslint-sukka/node':
         specifier: ^6.13.0
@@ -807,6 +811,9 @@ packages:
 
   flatted@3.3.2:
     resolution: {integrity: sha512-AiwGJM8YcNOaobumgtng+6NHuOqC3A7MixFeDafM3X9cIUM+xUXoS5Vfgf+OihAYe20fxqNM9yPBXJzRtZ/4eA==}
+
+  foxts@1.0.11:
+    resolution: {integrity: sha512-yO5eV+OuORNzmRzxBjXRyLPRyac1mR5zog7+EhpTVDfV3mfP7JYLJjCRNJpLudCbCG6mmVM4b8z0AfgWRKKfYA==}
 
   fs-minipass@2.1.0:
     resolution: {integrity: sha512-V/JgOLFCS+R6Vcq0slCuaeWEdNC3ouDlJMNIsacH2VtALiu9mV4LPrHc5cDl8k5aw6J8jwgWWpiTo5RYhmIzvg==}
@@ -2079,6 +2086,8 @@ snapshots:
       keyv: 4.5.4
 
   flatted@3.3.2: {}
+
+  foxts@1.0.11: {}
 
   fs-minipass@2.1.0:
     dependencies:
