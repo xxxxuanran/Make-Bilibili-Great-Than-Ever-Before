@@ -32,7 +32,7 @@ export default defineConfig([
     plugins: [
       swc(defineRollupSwcOption({
         jsc: {
-          target: 'es2020',
+          target: 'es2022',
           externalHelpers: true
         }
       })),
