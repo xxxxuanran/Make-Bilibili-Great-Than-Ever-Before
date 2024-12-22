@@ -47,7 +47,8 @@ export default defineConfig([
         preventAssignment: true,
         values: {
           'process.env.NODE_ENV': JSON.stringify('production'),
-          'typeof window': JSON.stringify('object')
+          'typeof window': JSON.stringify('object'),
+          globalThis: 'unsafeWindow'
         }
       }),
       metablock(userScriptMetaBlockConfig)

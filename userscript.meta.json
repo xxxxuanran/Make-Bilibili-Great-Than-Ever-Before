@@ -2,7 +2,8 @@
   "name": "Make Bilibili Great Than Ever Before",
   "namespace": "https://skk.moe",
   "grant": [
-    "unsafeWindow"
+    "unsafeWindow",
+    "GM.notification"
   ],
   "run-at": "document-end",
   "match": ["*://*/*"],
