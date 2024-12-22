@@ -3,24 +3,10 @@ import { logger } from '../logger';
 import type { MakeBilibiliGreatThanEverBeforeModule } from '../types';
 
 // 防止叔叔用 P2P CDN 省下纸钱
+
+const rBackupCdn = /up[\w-]+\.bilivideo\.com/;
+
 export default function noP2P(): MakeBilibiliGreatThanEverBeforeModule {
-  let cdnDomain: string | undefined;
-  if (location.href.startsWith('https://www.bilibili.com/video/') || location.href.startsWith('https://www.bilibili.com/bangumi/play/')) {
-    cdnDomain ||= (/up[\w-]+\.bilivideo\.com/.exec(document.head.innerHTML))?.[0];
-
-    (function (open) {
-      globalThis.XMLHttpRequest.prototype.open = function (this: XMLHttpRequest, ...args: Parameters<XMLHttpRequest['open']>) {
-        try {
-          args[1] = replaceP2P(new URL(args[1]), cdnDomain).href;
-        } catch (e) {
-          logger.error('Failed to replace P2P for XMLHttpRequest.prototype.open', e);
-        }
-        return Reflect.apply(open, this, args);
-      } as typeof XMLHttpRequest.prototype.open;
-      // eslint-disable-next-line @typescript-eslint/unbound-method -- called with Reflect.apply
-    }(globalThis.XMLHttpRequest.prototype.open));
-  }
-
   return {
     any() {
       class MockPCDNLoader { }
@@ -56,7 +42,7 @@ export default function noP2P(): MakeBilibiliGreatThanEverBeforeModule {
         configurable: false
       });
     },
-    onVideoOrBangumi({ onBeforeFetch }) {
+    onVideoOrBangumi({ onBeforeFetch, onXhrOpen }) {
       // Patch new Native Player
       (function (HTMLMediaElementPrototypeSrcDescriptor) {
         Object.defineProperty(globalThis.HTMLMediaElement.prototype, 'src', {
@@ -78,8 +64,23 @@ export default function noP2P(): MakeBilibiliGreatThanEverBeforeModule {
         });
       }(Object.getOwnPropertyDescriptor(globalThis.HTMLMapElement.prototype, 'src')));
 
+      onXhrOpen((xhrOpenArgs) => {
+        try {
+          xhrOpenArgs[1] = replaceP2P(
+            new URL(xhrOpenArgs[1]),
+            rBackupCdn.exec(document.head.innerHTML)?.[0]
+          ).href;
+        } catch (e) {
+          logger.error('Failed to replace P2P for XMLHttpRequest.prototype.open', e);
+        }
+
+        return xhrOpenArgs;
+      });
+
       onBeforeFetch((fetchArgs: [RequestInfo | URL, RequestInit?]) => {
         try {
+          const cdnDomain = rBackupCdn.exec(document.head.innerHTML)?.[0];
+
           let input = fetchArgs[0];
           if (typeof input === 'string') {
             input = replaceP2P(new URL(input), cdnDomain).href;

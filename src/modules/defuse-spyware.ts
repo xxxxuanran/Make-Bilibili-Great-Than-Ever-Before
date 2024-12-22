@@ -14,21 +14,20 @@ declare global {
 }
 
 const defuseSpyware: MakeBilibiliGreatThanEverBeforeModule = {
-  any({ onBeforeFetch }) {
-    (($open) => {
-      globalThis.XMLHttpRequest.prototype.open = function (this: XMLHttpRequest, ...args) {
-        let url = args[1];
-        if (typeof url !== 'string') {
-          url = url.href;
-        }
-        if (url.includes('data.bilibili.com')) {
-          this.send = noop;
-          return;
-        }
-        return Reflect.apply($open, this, args);
-      } as typeof XMLHttpRequest.prototype.open;
-      // eslint-disable-next-line @typescript-eslint/unbound-method -- call with Reflect.apply
-    })(globalThis.XMLHttpRequest.prototype.open);
+  any({ onBeforeFetch, onXhrOpen }) {
+    onXhrOpen((args, xhr) => {
+      let url = args[1];
+      if (typeof url !== 'string') {
+        url = url.href;
+      }
+
+      if (url.includes('data.bilibili.com')) {
+        xhr.send = noop;
+        return null;
+      }
+
+      return args;
+    });
 
     unsafeWindow.navigator.sendBeacon = trueFn;
 

@@ -9,9 +9,11 @@ export interface MakeBilibiliGreatThanEverBeforeModule {
 }
 
 export type OnBeforeFetchHook = (fetchArgs: [requestInfo: RequestInfo | URL, requestInit?: RequestInit]) => [requestInfo: RequestInfo | URL, requestInit?: RequestInit] | null | Response;
+export type OnXhrOpenHook = (xhrOpenArgs: Parameters<XMLHttpRequest['open']>, xhr: XMLHttpRequest) => Parameters<XMLHttpRequest['open']> | null;
 
 export interface MakeBilibiliGreatThanEverBeforeHook {
   addStyle(this: void, css: string): void,
   onBeforeFetch(this: void, cb: OnBeforeFetchHook): void,
-  onResponse(this: void, cb: (response: Response) => Response): void
+  onResponse(this: void, cb: (response: Response) => Response): void,
+  onXhrOpen(this: void, cb: OnXhrOpenHook): void
 };

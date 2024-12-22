@@ -1,3 +1,4 @@
+import { logger } from './logger';
 import defuseSpyware from './modules/defuse-spyware';
 import enhanceLive from './modules/enhance-live';
 import fixCopyInCV from './modules/fix-copy-in-cv';
@@ -10,6 +11,7 @@ import playerVideoFit from './modules/player-video-fit';
 import removeBlackBackdropFilter from './modules/remove-black-backdrop-filter';
 import removeUselessUrlParams from './modules/remove-useless-url-params';
 import useSystemFonts from './modules/use-system-fonts';
+import type { OnXhrOpenHook } from './types';
 import type { MakeBilibiliGreatThanEverBeforeHook, MakeBilibiliGreatThanEverBeforeModule, OnBeforeFetchHook } from './types';
 
 (() => {
@@ -31,6 +33,7 @@ import type { MakeBilibiliGreatThanEverBeforeHook, MakeBilibiliGreatThanEverBefo
   const styles: string[] = [];
   const onBeforeFetchHooks = new Set<OnBeforeFetchHook>();
   const onResponseHooks = new Set<(response: Response) => Response>();
+  const onXhrOpenHooks = new Set<OnXhrOpenHook>();
 
   const hook: MakeBilibiliGreatThanEverBeforeHook = {
     addStyle(style: string) {
@@ -41,6 +44,9 @@ import type { MakeBilibiliGreatThanEverBeforeHook, MakeBilibiliGreatThanEverBefo
     },
     onResponse(cb) {
       onResponseHooks.add(cb);
+    },
+    onXhrOpen(cb) {
+      onXhrOpenHooks.add(cb);
     }
   };
 
@@ -116,4 +122,28 @@ import type { MakeBilibiliGreatThanEverBeforeHook, MakeBilibiliGreatThanEverBefo
     };
     // eslint-disable-next-line @typescript-eslint/unbound-method -- call with Reflect.apply
   })(unsafeWindow.fetch);
+
+  (function (open) {
+    globalThis.XMLHttpRequest.prototype.open = function (this: XMLHttpRequest, ...$args: Parameters<XMLHttpRequest['open']>) {
+      let xhrArgs: Parameters<XMLHttpRequest['open']> | null = $args;
+
+      for (const onXhrOpen of onXhrOpenHooks) {
+        try {
+          xhrArgs = onXhrOpen($args, this);
+          if (xhrArgs === null) {
+            break;
+          }
+        } catch (e) {
+          logger.error('Failed to replace P2P for XMLHttpRequest.prototype.open', e);
+        }
+      }
+
+      if (xhrArgs === null) {
+        return;
+      }
+
+      return Reflect.apply(open, this, xhrArgs);
+    } as typeof XMLHttpRequest.prototype.open;
+    // eslint-disable-next-line @typescript-eslint/unbound-method -- called with Reflect.apply
+  }(globalThis.XMLHttpRequest.prototype.open));
 })();
