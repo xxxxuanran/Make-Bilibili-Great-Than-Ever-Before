@@ -11,21 +11,24 @@ declare global {
 }
 
 export default function fixCopyInCV(): MakeBilibiliGreatThanEverBeforeModule {
-  if (location.href.startsWith('https://www.bilibili.com/read/cv')) {
-    if (unsafeWindow.original) {
-      Object.defineProperty(unsafeWindow.original, 'reprint', {
-        get() {
-          return '1';
-        },
-        set: noop,
-        configurable: false,
-        enumerable: true
-      });
+  return {
+    onCV() {
+      if (unsafeWindow.original) {
+        Object.defineProperty(unsafeWindow.original, 'reprint', {
+          get() {
+            return '1';
+          },
+          set: noop,
+          configurable: false,
+          enumerable: true
+        });
+      }
+
+      const holder = document.querySelector('.article-holder');
+      if (holder) {
+        holder.classList.remove('unable-reprint');
+        holder.addEventListener('copy', e => e.stopImmediatePropagation(), true);
+      }
     }
-
-    document.querySelector('.article-holder')?.classList.remove('unable-reprint');
-    document.querySelector('.article-holder')?.addEventListener('copy', e => e.stopImmediatePropagation(), true);
-  }
-
-  return {};
+  };
 }

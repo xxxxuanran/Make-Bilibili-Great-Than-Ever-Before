@@ -11,7 +11,6 @@ import removeBlackBackdropFilter from './modules/remove-black-backdrop-filter';
 import removeUselessUrlParams from './modules/remove-useless-url-params';
 import useSystemFonts from './modules/use-system-fonts';
 import type { MakeBilibiliGreatThanEverBeforeHook, MakeBilibiliGreatThanEverBeforeModule } from './types';
-import { addStyle } from './utils/add-style';
 
 (() => {
   const modules: MakeBilibiliGreatThanEverBeforeModule[] = [
@@ -42,16 +41,34 @@ import { addStyle } from './utils/add-style';
 
   for (const module of modules) {
     module.any?.(hook);
-    if (hostname === 'www.bilibili.com') {
-      if (pathname.startsWith('/read/cv')) {
-        module.onCV?.(hook);
-      } else if (pathname.startsWith('/video/')) {
-        module.onVideo?.(hook);
+    switch (hostname) {
+      case 'www.bilibili.com': {
+        module.onWww?.(hook);
+        if (pathname.startsWith('/read/cv')) {
+          module.onCV?.(hook);
+        } else if (pathname.startsWith('/video/')) {
+          module.onVideo?.(hook);
+        } else if (pathname.startsWith('/bangumi/play/')) {
+          module.onBangumi?.(hook);
+        }
+        break;
       }
-    } else if (hostname === 'live.bilibili.com') {
-      module.onLive?.(hook);
+      case 'live.bilibili.com': {
+        module.onLive?.(hook);
+        break;
+      }
+      case 't.bilibili.com': {
+        module.onStory?.(hook);
+        break;
+      }
+      // no default
     }
   }
 
-  addStyle(styles.join('\n'));
+  // Add Style
+  const head = document.head || document.getElementsByTagName('head')[0];
+  const style = document.createElement('style');
+  style.setAttribute('type', 'text/css');
+  style.textContent = styles.join('\n');
+  head.appendChild(style);
 })();

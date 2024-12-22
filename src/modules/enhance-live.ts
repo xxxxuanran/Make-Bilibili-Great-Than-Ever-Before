@@ -1,6 +1,5 @@
 // 增强直播（原画画质、其他修复）
 import type { MakeBilibiliGreatThanEverBeforeModule } from '../types';
-import { addStyle } from '../utils/add-style';
 import { getUrlFromRequest } from '../utils/get-url-from-request';
 
 declare global {
@@ -55,13 +54,15 @@ export default function enhanceLive(): MakeBilibiliGreatThanEverBeforeModule {
       };
       // eslint-disable-next-line @typescript-eslint/unbound-method -- called with Reflect.apply
     })(unsafeWindow.fetch);
-
-    // 还得帮叔叔修 bug，唉
-    addStyle('div[data-cy=EvaRenderer_LayerWrapper]:has(.player) { z-index: 999999; }');
-
-    // 去台标
-    addStyle('.web-player-icon-roomStatus { display: none !important; }');
   }
 
-  return {};
+  return {
+    onLive({ addStyle }) {
+    // 还得帮叔叔修 bug，唉
+      addStyle('div[data-cy=EvaRenderer_LayerWrapper]:has(.player) { z-index: 999999; }');
+
+      // 去台标
+      addStyle('.web-player-icon-roomStatus { display: none !important; }');
+    }
+  };
 }
