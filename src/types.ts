@@ -1,11 +1,11 @@
 export interface MakeBilibiliGreatThanEverBeforeModule {
   any?: (hook: MakeBilibiliGreatThanEverBeforeHook) => void,
-  onWww?: (hook: MakeBilibiliGreatThanEverBeforeHook) => void,
   onVideo?: (hook: MakeBilibiliGreatThanEverBeforeHook) => void,
   onLive?: (hook: MakeBilibiliGreatThanEverBeforeHook) => void,
   onCV?: (hook: MakeBilibiliGreatThanEverBeforeHook) => void,
   onStory?: (hook: MakeBilibiliGreatThanEverBeforeHook) => void,
-  onBangumi?: (hook: MakeBilibiliGreatThanEverBeforeHook) => void
+  onBangumi?: (hook: MakeBilibiliGreatThanEverBeforeHook) => void,
+  onVideoOrBangumi?: (hook: MakeBilibiliGreatThanEverBeforeHook) => void
 }
 
 export type OnBeforeFetchHook = (fetchArgs: [requestInfo: RequestInfo | URL, requestInit?: RequestInit]) => [requestInfo: RequestInfo | URL, requestInit?: RequestInit] | null | Response;

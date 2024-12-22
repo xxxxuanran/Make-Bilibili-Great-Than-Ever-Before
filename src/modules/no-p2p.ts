@@ -4,63 +4,9 @@ import type { MakeBilibiliGreatThanEverBeforeModule } from '../types';
 
 // 防止叔叔用 P2P CDN 省下纸钱
 export default function noP2P(): MakeBilibiliGreatThanEverBeforeModule {
-  class MockPCDNLoader { }
-
-  class MockBPP2PSDK {
-    on = noop;
-  }
-
-  class MockSeederSDK { }
-
-  Object.defineProperty(unsafeWindow, 'PCDNLoader', {
-    get() {
-      return MockPCDNLoader;
-    },
-    set: noop,
-    enumerable: true,
-    configurable: false
-  });
-  Object.defineProperty(unsafeWindow, 'BPP2PSDK', {
-    get() {
-      return MockBPP2PSDK;
-    },
-    set: noop,
-    enumerable: true,
-    configurable: false
-  });
-  Object.defineProperty(unsafeWindow, 'SeederSDK', {
-    get() {
-      return MockSeederSDK;
-    },
-    set: noop,
-    enumerable: true,
-    configurable: false
-  });
-
   let cdnDomain: string | undefined;
   if (location.href.startsWith('https://www.bilibili.com/video/') || location.href.startsWith('https://www.bilibili.com/bangumi/play/')) {
     cdnDomain ||= (/up[\w-]+\.bilivideo\.com/.exec(document.head.innerHTML))?.[0];
-
-    // Patch new Native Player
-    (function (HTMLMediaElementPrototypeSrcDescriptor) {
-      Object.defineProperty(globalThis.HTMLMediaElement.prototype, 'src', {
-        ...HTMLMediaElementPrototypeSrcDescriptor,
-        set(value: any) {
-          if (typeof value !== 'string') {
-            value = String(value);
-          }
-          let newValue: string;
-          try {
-            newValue = replaceP2P(new URL(value)).href;
-          } catch (e) {
-            logger.error('Failed to handle HTMLMediaElement.prototype.src setter', e);
-            newValue = value;
-          }
-
-          HTMLMediaElementPrototypeSrcDescriptor?.set?.call(this, newValue);
-        }
-      });
-    }(Object.getOwnPropertyDescriptor(globalThis.HTMLMapElement.prototype, 'src')));
 
     (function (open) {
       globalThis.XMLHttpRequest.prototype.open = function (this: XMLHttpRequest, ...args: Parameters<XMLHttpRequest['open']>) {
@@ -75,33 +21,83 @@ export default function noP2P(): MakeBilibiliGreatThanEverBeforeModule {
     }(globalThis.XMLHttpRequest.prototype.open));
   }
 
-  const onBeforeFetchDefuseP2P = (fetchArgs: [RequestInfo | URL, RequestInit?]) => {
-    try {
-      let input = fetchArgs[0];
-      if (typeof input === 'string') {
-        input = replaceP2P(new URL(input), cdnDomain).href;
-      } else if (input instanceof Request) {
-        input = new Request(replaceP2P(new URL(input.url), cdnDomain).href, input);
-      } else if (input instanceof URL) {
-        input = replaceP2P(input, cdnDomain);
-      } else {
-        input = replaceP2P(new URL(String(input)), cdnDomain).href;
+  return {
+    any() {
+      class MockPCDNLoader { }
+
+      class MockBPP2PSDK {
+        on = noop;
       }
 
-      fetchArgs[0] = input;
-    } catch (e) {
-      logger.error('Failed to replace P2P for fetch', e);
-    }
+      class MockSeederSDK { }
 
-    return fetchArgs;
-  };
-
-  return {
-    onVideo({ onBeforeFetch }) {
-      onBeforeFetch(onBeforeFetchDefuseP2P);
+      Object.defineProperty(unsafeWindow, 'PCDNLoader', {
+        get() {
+          return MockPCDNLoader;
+        },
+        set: noop,
+        enumerable: true,
+        configurable: false
+      });
+      Object.defineProperty(unsafeWindow, 'BPP2PSDK', {
+        get() {
+          return MockBPP2PSDK;
+        },
+        set: noop,
+        enumerable: true,
+        configurable: false
+      });
+      Object.defineProperty(unsafeWindow, 'SeederSDK', {
+        get() {
+          return MockSeederSDK;
+        },
+        set: noop,
+        enumerable: true,
+        configurable: false
+      });
     },
-    onBangumi({ onBeforeFetch }) {
-      onBeforeFetch(onBeforeFetchDefuseP2P);
+    onVideoOrBangumi({ onBeforeFetch }) {
+      // Patch new Native Player
+      (function (HTMLMediaElementPrototypeSrcDescriptor) {
+        Object.defineProperty(globalThis.HTMLMediaElement.prototype, 'src', {
+          ...HTMLMediaElementPrototypeSrcDescriptor,
+          set(value: any) {
+            if (typeof value !== 'string') {
+              value = String(value);
+            }
+            let newValue: string;
+            try {
+              newValue = replaceP2P(new URL(value)).href;
+            } catch (e) {
+              logger.error('Failed to handle HTMLMediaElement.prototype.src setter', e);
+              newValue = value;
+            }
+
+            HTMLMediaElementPrototypeSrcDescriptor?.set?.call(this, newValue);
+          }
+        });
+      }(Object.getOwnPropertyDescriptor(globalThis.HTMLMapElement.prototype, 'src')));
+
+      onBeforeFetch((fetchArgs: [RequestInfo | URL, RequestInit?]) => {
+        try {
+          let input = fetchArgs[0];
+          if (typeof input === 'string') {
+            input = replaceP2P(new URL(input), cdnDomain).href;
+          } else if (input instanceof Request) {
+            input = new Request(replaceP2P(new URL(input.url), cdnDomain).href, input);
+          } else if (input instanceof URL) {
+            input = replaceP2P(input, cdnDomain);
+          } else {
+            input = replaceP2P(new URL(String(input)), cdnDomain).href;
+          }
+
+          fetchArgs[0] = input;
+        } catch (e) {
+          logger.error('Failed to replace P2P for fetch', e);
+        }
+
+        return fetchArgs;
+      });
     }
   };
 }

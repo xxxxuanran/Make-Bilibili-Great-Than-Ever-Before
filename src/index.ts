@@ -14,18 +14,18 @@ import type { MakeBilibiliGreatThanEverBeforeHook, MakeBilibiliGreatThanEverBefo
 
 (() => {
   const modules: MakeBilibiliGreatThanEverBeforeModule[] = [
-    defuseSpyware(),
-    enhanceLive(),
-    fixCopyInCV(),
-    noAd(),
+    defuseSpyware,
+    enhanceLive,
+    fixCopyInCV,
+    noAd,
     noP2P(),
-    noWebRTC(),
-    optimizeHomepage(),
-    optimizeStory(),
-    playerVideoFit(),
-    removeBlackBackdropFilter(),
-    removeUselessUrlParams(),
-    useSystemFonts()
+    noWebRTC,
+    optimizeHomepage,
+    optimizeStory,
+    playerVideoFit,
+    removeBlackBackdropFilter,
+    removeUselessUrlParams,
+    useSystemFonts
   ];
 
   const styles: string[] = [];
@@ -51,13 +51,14 @@ import type { MakeBilibiliGreatThanEverBeforeHook, MakeBilibiliGreatThanEverBefo
     module.any?.(hook);
     switch (hostname) {
       case 'www.bilibili.com': {
-        module.onWww?.(hook);
         if (pathname.startsWith('/read/cv')) {
           module.onCV?.(hook);
         } else if (pathname.startsWith('/video/')) {
           module.onVideo?.(hook);
+          module.onVideoOrBangumi?.(hook);
         } else if (pathname.startsWith('/bangumi/play/')) {
           module.onBangumi?.(hook);
+          module.onVideoOrBangumi?.(hook);
         }
         break;
       }

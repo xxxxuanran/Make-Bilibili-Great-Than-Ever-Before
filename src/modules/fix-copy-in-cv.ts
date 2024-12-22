@@ -10,25 +10,25 @@ declare global {
   }
 }
 
-export default function fixCopyInCV(): MakeBilibiliGreatThanEverBeforeModule {
-  return {
-    onCV() {
-      if (unsafeWindow.original) {
-        Object.defineProperty(unsafeWindow.original, 'reprint', {
-          get() {
-            return '1';
-          },
-          set: noop,
-          configurable: false,
-          enumerable: true
-        });
-      }
-
-      const holder = document.querySelector('.article-holder');
-      if (holder) {
-        holder.classList.remove('unable-reprint');
-        holder.addEventListener('copy', e => e.stopImmediatePropagation(), true);
-      }
+const fixCopyInCV: MakeBilibiliGreatThanEverBeforeModule = {
+  onCV() {
+    if (unsafeWindow.original) {
+      Object.defineProperty(unsafeWindow.original, 'reprint', {
+        get() {
+          return '1';
+        },
+        set: noop,
+        configurable: false,
+        enumerable: true
+      });
     }
-  };
-}
+
+    const holder = document.querySelector('.article-holder');
+    if (holder) {
+      holder.classList.remove('unable-reprint');
+      holder.addEventListener('copy', e => e.stopImmediatePropagation(), true);
+    }
+  }
+};
+
+export default fixCopyInCV;

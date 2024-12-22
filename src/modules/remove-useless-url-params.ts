@@ -16,23 +16,25 @@ const uselessUrlParams = [
   /^spm/
 ];
 
-export default function removeUselessUrlParams(): MakeBilibiliGreatThanEverBeforeModule {
-  unsafeWindow.history.replaceState(undefined, '', removeTracking(location.href));
+const removeUselessUrlParams: MakeBilibiliGreatThanEverBeforeModule = {
+  any() {
+    unsafeWindow.history.replaceState(undefined, '', removeTracking(location.href));
 
-  // eslint-disable-next-line @typescript-eslint/unbound-method -- called with Reflect.apply
-  const pushState = unsafeWindow.history.pushState;
-  unsafeWindow.history.pushState = function (state, unused, url) {
-    return Reflect.apply(pushState, this, [state, unused, removeTracking(url)]);
-  };
+    // eslint-disable-next-line @typescript-eslint/unbound-method -- called with Reflect.apply
+    const pushState = unsafeWindow.history.pushState;
+    unsafeWindow.history.pushState = function (state, unused, url) {
+      return Reflect.apply(pushState, this, [state, unused, removeTracking(url)]);
+    };
 
-  // eslint-disable-next-line @typescript-eslint/unbound-method -- called with Reflect.apply
-  const replaceState = unsafeWindow.history.replaceState;
-  unsafeWindow.history.replaceState = function (state, unused, url) {
-    return Reflect.apply(replaceState, this, [state, unused, removeTracking(url)]);
-  };
+    // eslint-disable-next-line @typescript-eslint/unbound-method -- called with Reflect.apply
+    const replaceState = unsafeWindow.history.replaceState;
+    unsafeWindow.history.replaceState = function (state, unused, url) {
+      return Reflect.apply(replaceState, this, [state, unused, removeTracking(url)]);
+    };
+  }
+};
 
-  return {};
-}
+export default removeUselessUrlParams;
 
 function removeTracking(url: string | URL | null | undefined) {
   if (!url) return url;
