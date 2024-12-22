@@ -73,28 +73,37 @@ export default function noP2P(): MakeBilibiliGreatThanEverBeforeModule {
       } as typeof XMLHttpRequest.prototype.open;
       // eslint-disable-next-line @typescript-eslint/unbound-method -- called with Reflect.apply
     }(globalThis.XMLHttpRequest.prototype.open));
-
-    (function ($fetch) {
-      globalThis.fetch = async function (this: unknown, input: URL | RequestInfo, init?: RequestInit) {
-        try {
-          if (typeof input === 'string') {
-            input = replaceP2P(new URL(input), cdnDomain).href;
-          } else if (input instanceof Request) {
-            input = new Request(replaceP2P(new URL(input.url), cdnDomain).href, input);
-          } else if (input instanceof URL) {
-            input = replaceP2P(input, cdnDomain).href;
-          } else {
-            input = replaceP2P(new URL(String(input)), cdnDomain).href;
-          }
-        } catch (e) {
-          logger.error('Failed to replace P2P for fetch', e);
-        }
-        return Reflect.apply($fetch, this, [input, init]);
-      };
-    }(globalThis.fetch));
   }
 
-  return {};
+  const onBeforeFetchDefuseP2P = (fetchArgs: [RequestInfo | URL, RequestInit?]) => {
+    try {
+      let input = fetchArgs[0];
+      if (typeof input === 'string') {
+        input = replaceP2P(new URL(input), cdnDomain).href;
+      } else if (input instanceof Request) {
+        input = new Request(replaceP2P(new URL(input.url), cdnDomain).href, input);
+      } else if (input instanceof URL) {
+        input = replaceP2P(input, cdnDomain);
+      } else {
+        input = replaceP2P(new URL(String(input)), cdnDomain).href;
+      }
+
+      fetchArgs[0] = input;
+    } catch (e) {
+      logger.error('Failed to replace P2P for fetch', e);
+    }
+
+    return fetchArgs;
+  };
+
+  return {
+    onVideo({ onBeforeFetch }) {
+      onBeforeFetch(onBeforeFetchDefuseP2P);
+    },
+    onBangumi({ onBeforeFetch }) {
+      onBeforeFetch(onBeforeFetchDefuseP2P);
+    }
+  };
 }
 
 function replaceP2P(url: URL, cdnDomain = 'upos-sz-mirrorcoso1.bilivideo.com') {

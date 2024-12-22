@@ -4,6 +4,7 @@ import { noop, trueFn } from 'foxts/noop';
 import { getUrlFromRequest } from '../utils/get-url-from-request';
 import { createMockClass } from '../utils/mock-class';
 import type { MakeBilibiliGreatThanEverBeforeModule } from '../types';
+import { logger } from '../logger';
 
 declare global {
   interface Window {
@@ -13,16 +14,6 @@ declare global {
 }
 
 export default function defuseSpyware(): MakeBilibiliGreatThanEverBeforeModule {
-  (($fetch) => {
-    unsafeWindow.fetch = function (...args) {
-      const url = getUrlFromRequest(args[0]);
-
-      if (typeof url === 'string' && url.includes('data.bilibili.com')) return Promise.resolve(new Response());
-      return Reflect.apply($fetch, this, args);
-    };
-    // eslint-disable-next-line @typescript-eslint/unbound-method -- call with Reflect.apply
-  })(unsafeWindow.fetch);
-
   (($open) => {
     globalThis.XMLHttpRequest.prototype.open = function (this: XMLHttpRequest, ...args) {
       let url = args[1];
@@ -108,5 +99,19 @@ export default function defuseSpyware(): MakeBilibiliGreatThanEverBeforeModule {
   Object.defineProperty(unsafeWindow, '__USER_FP_CONFIG__', { get: noop, set: noop, configurable: false, enumerable: true });
   Object.defineProperty(unsafeWindow, '__MIRROR_CONFIG__', { get: noop, set: noop, configurable: false, enumerable: true });
 
-  return {};
+  return {
+    any({ onBeforeFetch }) {
+      onBeforeFetch((fetchArgs) => {
+        const url = getUrlFromRequest(fetchArgs[0]);
+
+        if (url === null) {
+          logger.error('Invalid requestInfo', fetchArgs[0]);
+        } else if (typeof url === 'string' && url.includes('data.bilibili.com')) {
+          return new Response();
+        };
+
+        return fetchArgs;
+      });
+    }
+  };
 }

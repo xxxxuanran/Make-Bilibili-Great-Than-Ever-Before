@@ -8,6 +8,9 @@ export interface MakeBilibiliGreatThanEverBeforeModule {
   onBangumi?: (hook: MakeBilibiliGreatThanEverBeforeHook) => void
 }
 
+export type OnBeforeFetchHook = (fetchArgs: [requestInfo: RequestInfo | URL, requestInit?: RequestInit]) => [requestInfo: RequestInfo | URL, requestInit?: RequestInit] | null | Response;
+
 export interface MakeBilibiliGreatThanEverBeforeHook {
-  addStyle(this: void, css: string): void
+  addStyle(this: void, css: string): void,
+  onBeforeFetch(this: void, cb: OnBeforeFetchHook): void
 };

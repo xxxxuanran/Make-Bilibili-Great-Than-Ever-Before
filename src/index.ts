@@ -10,7 +10,7 @@ import playerVideoFit from './modules/player-video-fit';
 import removeBlackBackdropFilter from './modules/remove-black-backdrop-filter';
 import removeUselessUrlParams from './modules/remove-useless-url-params';
 import useSystemFonts from './modules/use-system-fonts';
-import type { MakeBilibiliGreatThanEverBeforeHook, MakeBilibiliGreatThanEverBeforeModule } from './types';
+import type { MakeBilibiliGreatThanEverBeforeHook, MakeBilibiliGreatThanEverBeforeModule, OnBeforeFetchHook } from './types';
 
 (() => {
   const modules: MakeBilibiliGreatThanEverBeforeModule[] = [
@@ -29,10 +29,14 @@ import type { MakeBilibiliGreatThanEverBeforeHook, MakeBilibiliGreatThanEverBefo
   ];
 
   const styles: string[] = [];
+  const onBeforeFetchHooks: OnBeforeFetchHook[] = [];
 
   const hook: MakeBilibiliGreatThanEverBeforeHook = {
     addStyle(style: string) {
       styles.push(style);
+    },
+    onBeforeFetch(cb) {
+      onBeforeFetchHooks.push(cb);
     }
   };
 
@@ -71,4 +75,31 @@ import type { MakeBilibiliGreatThanEverBeforeHook, MakeBilibiliGreatThanEverBefo
   style.setAttribute('type', 'text/css');
   style.textContent = styles.join('\n');
   head.appendChild(style);
+
+  // Override fetch
+  (($fetch) => {
+    unsafeWindow.fetch = function (...args) {
+      let abortFetch = false;
+      let mockResponse: Response | null = null;
+      for (const obBeforeFetch of onBeforeFetchHooks) {
+        const result = obBeforeFetch(args);
+        if (result === null) {
+          abortFetch = true;
+          break;
+        } else if (result instanceof Response) {
+          abortFetch = true;
+          mockResponse = result;
+          break;
+        }
+        args = result;
+      }
+
+      if (abortFetch) {
+        return Promise.resolve(mockResponse ?? new Response());
+      }
+
+      return Reflect.apply($fetch, this, args);
+    };
+    // eslint-disable-next-line @typescript-eslint/unbound-method -- call with Reflect.apply
+  })(unsafeWindow.fetch);
 })();
