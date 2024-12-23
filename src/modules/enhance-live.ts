@@ -1,4 +1,3 @@
-// 增强直播（原画画质、其他修复）
 import type { MakeBilibiliGreatThanEverBeforeModule } from '../types';
 import { getUrlFromRequest } from '../utils/get-url-from-request';
 
@@ -12,6 +11,8 @@ declare global {
 const qualityRegexp = /(live-bvc\/\d+\/live_\d+_\d+)_\w+/;
 
 const enhanceLive: MakeBilibiliGreatThanEverBeforeModule = {
+  name: 'enhance-live',
+  description: '增强直播（原画画质、其他修复）',
   onLive({ addStyle, onBeforeFetch, onResponse }) {
     let forceHighestQuality = true;
     let recentErrors = 0;

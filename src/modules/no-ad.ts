@@ -1,4 +1,3 @@
-// 防止叔叔通过广告给自己赚棺材钱
 import type { MakeBilibiliGreatThanEverBeforeModule } from '../types';
 
 declare global {
@@ -13,6 +12,8 @@ declare global {
 }
 
 const noAd: MakeBilibiliGreatThanEverBeforeModule = {
+  name: 'no-ad',
+  description: '防止叔叔通过广告给自己赚棺材钱',
   any({ addStyle }) {
     // 去广告
     addStyle('.ad-report, a[href*="cm.bilibili.com"] { display: none !important; }');

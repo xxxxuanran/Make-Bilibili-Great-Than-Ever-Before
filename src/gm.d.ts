@@ -1,1 +1,1 @@
-declare const unsafeWindow = globalThis;
+declare const unsafeWindow: typeof globalThis & Window;

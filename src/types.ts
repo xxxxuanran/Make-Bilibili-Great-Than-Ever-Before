@@ -1,4 +1,6 @@
 export interface MakeBilibiliGreatThanEverBeforeModule {
+  name: string,
+  description: string,
   any?: (hook: MakeBilibiliGreatThanEverBeforeHook) => void,
   onVideo?: (hook: MakeBilibiliGreatThanEverBeforeHook) => void,
   onLive?: (hook: MakeBilibiliGreatThanEverBeforeHook) => void,

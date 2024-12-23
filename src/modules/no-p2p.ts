@@ -2,8 +2,6 @@ import { noop } from 'foxts/noop';
 import { logger } from '../logger';
 import type { MakeBilibiliGreatThanEverBeforeModule } from '../types';
 
-// 防止叔叔用 P2P CDN 省下纸钱
-
 const rBackupCdn = /up[\w-]+\.bilivideo\.com/;
 
 let prevLocationHref = '';
@@ -33,6 +31,8 @@ function getCDNDomain() {
 }
 
 const noP2P: MakeBilibiliGreatThanEverBeforeModule = {
+  name: 'no-p2p',
+  description: '防止叔叔用 P2P CDN 省下纸钱',
   any() {
     class MockPCDNLoader { }
 

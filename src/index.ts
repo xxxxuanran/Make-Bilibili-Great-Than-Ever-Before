@@ -16,7 +16,7 @@ import type { OnXhrOpenHook } from './types';
 import type { MakeBilibiliGreatThanEverBeforeHook, MakeBilibiliGreatThanEverBeforeModule, OnBeforeFetchHook } from './types';
 import { onDOMContentLoaded } from './utils/on-load-event';
 
-(() => {
+;((unsafeWindow) => {
   const modules: MakeBilibiliGreatThanEverBeforeModule[] = [
     defuseSpyware,
     enhanceLive,
@@ -56,26 +56,54 @@ import { onDOMContentLoaded } from './utils/on-load-event';
   const pathname = unsafeWindow.location.pathname;
 
   for (const module of modules) {
-    module.any?.(hook);
+    if (module.any) {
+      logger.trace(`[${module.name}] "any"`);
+      module.any(hook);
+    }
     switch (hostname) {
       case 'www.bilibili.com': {
         if (pathname.startsWith('/read/cv')) {
-          module.onCV?.(hook);
+          if (module.onCV) {
+            logger.trace(`[${module.name}] "onCV"`);
+            module.onCV(hook);
+          }
         } else if (pathname.startsWith('/video/')) {
-          module.onVideo?.(hook);
-          module.onVideoOrBangumi?.(hook);
+          if (module.onVideo) {
+            logger.trace(`[${module.name}] "onVideo"`);
+            module.onVideo(hook);
+          }
+          if (module.onVideoOrBangumi) {
+            logger.trace(`[${module.name}] "onVideoOrBangumi"`);
+            module.onVideoOrBangumi(hook);
+          }
         } else if (pathname.startsWith('/bangumi/play/')) {
-          module.onBangumi?.(hook);
-          module.onVideoOrBangumi?.(hook);
+          if (module.onVideo) {
+            logger.trace(`[${module.name}] "onVideo"`);
+            module.onVideo(hook);
+          }
+          if (module.onBangumi) {
+            logger.trace(`[${module.name}] "onBangumi"`);
+            module.onBangumi(hook);
+          }
+          if (module.onVideoOrBangumi) {
+            logger.trace(`[${module.name}] "onVideoOrBangumi"`);
+            module.onVideoOrBangumi(hook);
+          }
         }
         break;
       }
       case 'live.bilibili.com': {
-        module.onLive?.(hook);
+        if (module.onLive) {
+          logger.trace(`[${module.name}] "onLive"`);
+          module.onLive(hook);
+        }
         break;
       }
       case 't.bilibili.com': {
-        module.onStory?.(hook);
+        if (module.onStory) {
+          logger.trace(`[${module.name}] "onStory"`);
+          module.onStory(hook);
+        }
         break;
       }
       // no default
@@ -116,11 +144,7 @@ import { onDOMContentLoaded } from './utils/on-load-event';
       if (abortFetch) {
         logger.info('Fetch aborted', { fetchArgs, mockResponse });
 
-        let resp = mockResponse ?? new Response();
-        for (const onResponse of onResponseHooks) {
-          resp = onResponse(resp);
-        }
-        return Promise.resolve(resp);
+        return Promise.resolve(mockResponse ?? new Response());
       }
 
       return Reflect.apply($fetch, this, $fetchArgs).then((response) => {
@@ -158,4 +182,4 @@ import { onDOMContentLoaded } from './utils/on-load-event';
     } as typeof XMLHttpRequest.prototype.open;
     // eslint-disable-next-line @typescript-eslint/unbound-method -- called with Reflect.apply
   }(unsafeWindow.XMLHttpRequest.prototype.open));
-})();
+})(unsafeWindow);

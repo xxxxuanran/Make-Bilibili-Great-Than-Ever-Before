@@ -15,5 +15,8 @@ export const logger = {
   },
   debug(...args: unknown[]) {
     console.debug('[make-bilibili-great-than-ever-before]', ...args);
+  },
+  trace(...args: unknown[]) {
+    console.trace('[make-bilibili-great-than-ever-before]', ...args);
   }
 };

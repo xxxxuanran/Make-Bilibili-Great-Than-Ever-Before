@@ -1,5 +1,3 @@
-// 通过禁用 WebRTC 防止叔叔省下棺材钱
-
 import { noop } from 'foxts/noop';
 import { logger } from '../logger';
 import type { MakeBilibiliGreatThanEverBeforeModule } from '../types';
@@ -7,6 +5,8 @@ import type { MakeBilibiliGreatThanEverBeforeModule } from '../types';
 // based on uBlock Origin's no-webrtc
 // https://github.com/gorhill/uBlock/blob/6c228a8bfdcfc14140cdd3967270df28598c1aaf/src/js/resources/scriptlets.js#L2216
 const noWebRTC: MakeBilibiliGreatThanEverBeforeModule = {
+  name: 'no-webrtc',
+  description: '通过禁用 WebRTC 防止叔叔省下棺材钱',
   any() {
     const rtcPcNames: string[] = [];
 

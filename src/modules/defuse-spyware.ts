@@ -1,5 +1,3 @@
-// 禁用叔叔日志上报和用户跟踪的无限请求风暴
-
 import { noop, trueFn } from 'foxts/noop';
 import { getUrlFromRequest } from '../utils/get-url-from-request';
 import { createMockClass } from '../utils/mock-class';
@@ -13,20 +11,9 @@ declare global {
 }
 
 const defuseSpyware: MakeBilibiliGreatThanEverBeforeModule = {
+  name: 'defuse-spyware',
+  description: '禁用叔叔日志上报和用户跟踪的无限请求风暴',
   any({ onBeforeFetch, onXhrOpen }) {
-    onXhrOpen((args) => {
-      let url = args[1];
-      if (typeof url !== 'string') {
-        url = url.href;
-      }
-
-      if (url.includes('data.bilibili.com')) {
-        return null;
-      }
-
-      return args;
-    });
-
     Object.defineProperty(unsafeWindow.navigator, 'sendBeacon', {
       get() {
         return trueFn;
@@ -120,6 +107,19 @@ const defuseSpyware: MakeBilibiliGreatThanEverBeforeModule = {
       };
 
       return fetchArgs;
+    });
+
+    onXhrOpen((args) => {
+      let url = args[1];
+      if (typeof url !== 'string') {
+        url = url.href;
+      }
+
+      if (url.includes('data.bilibili.com')) {
+        return null;
+      }
+
+      return args;
     });
   }
 };

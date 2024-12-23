@@ -1,7 +1,6 @@
 import { noop } from 'foxts/noop';
 import type { MakeBilibiliGreatThanEverBeforeModule } from '../types';
 
-// 修复文章复制
 declare global {
   interface Window {
     original?: {
@@ -11,8 +10,10 @@ declare global {
 }
 
 const fixCopyInCV: MakeBilibiliGreatThanEverBeforeModule = {
+  name: 'fix-copy-in-cv',
+  description: '修复文章复制功能',
   onCV() {
-    if (unsafeWindow.original) {
+    if ('original' in unsafeWindow) {
       Object.defineProperty(unsafeWindow.original, 'reprint', {
         get() {
           return '1';

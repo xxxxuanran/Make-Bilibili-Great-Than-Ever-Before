@@ -1,7 +1,8 @@
 import type { MakeBilibiliGreatThanEverBeforeModule } from '../types';
 
-// 播放器视频裁切
 const playerVideoFit: MakeBilibiliGreatThanEverBeforeModule = {
+  name: 'player-video-fit',
+  description: '播放器视频裁切模式',
   onVideo({ addStyle }) {
     addStyle('body[video-fit] #bilibili-player video { object-fit: cover; } .bpx-player-ctrl-setting-fit-mode { display: flex;width: 100%;height: 32px;line-height: 32px; } .bpx-player-ctrl-setting-box .bui-panel-wrap, .bpx-player-ctrl-setting-box .bui-panel-item { min-height: 172px !important; }');
     let timer: number;

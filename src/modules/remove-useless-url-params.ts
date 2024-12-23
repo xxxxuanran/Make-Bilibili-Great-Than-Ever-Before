@@ -1,7 +1,6 @@
 import { logger } from '../logger';
 import type { MakeBilibiliGreatThanEverBeforeModule } from '../types';
 
-// 清理 URL 中的无用参数
 const uselessUrlParams = [
   'buvid',
   'is_story_h5',
@@ -17,6 +16,8 @@ const uselessUrlParams = [
 ];
 
 const removeUselessUrlParams: MakeBilibiliGreatThanEverBeforeModule = {
+  name: 'remove-useless-url-params',
+  description: '清理 URL 中的无用参数',
   any() {
     unsafeWindow.history.replaceState(undefined, '', removeTracking(location.href));
 
