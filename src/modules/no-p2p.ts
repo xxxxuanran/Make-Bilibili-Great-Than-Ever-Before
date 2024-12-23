@@ -6,6 +6,32 @@ import type { MakeBilibiliGreatThanEverBeforeModule } from '../types';
 
 const rBackupCdn = /up[\w-]+\.bilivideo\.com/;
 
+let prevLocationHref = '';
+let prevCdnDomains: string[] = [];
+function getCDNDomain() {
+  if (prevLocationHref !== unsafeWindow.location.href || prevCdnDomains.length === 0) {
+    try {
+      const matched = rBackupCdn.exec(document.head.innerHTML);
+      if (matched) {
+        prevLocationHref = unsafeWindow.location.href;
+        prevCdnDomains = matched;
+      } else {
+        logger.warn('Failed to get CDN domains from document.head.innerHTML, fallback to default CDN domain');
+        prevLocationHref = unsafeWindow.location.href;
+        prevCdnDomains = ['upos-sz-mirrorcoso1.bilivideo.com'];
+        return 'upos-sz-mirrorcoso1.bilivideo.com';
+      }
+    } catch (e) {
+      logger.error('Failed to get CDN domains from document.head.innerHTML, fallback to default CDN domain', e);
+      prevLocationHref = unsafeWindow.location.href;
+      prevCdnDomains = ['upos-sz-mirrorcoso1.bilivideo.com'];
+      return 'upos-sz-mirrorcoso1.bilivideo.com';
+    }
+  }
+
+  return prevCdnDomains[Math.floor(Math.random() * prevCdnDomains.length)];
+}
+
 const noP2P: MakeBilibiliGreatThanEverBeforeModule = {
   any() {
     class MockPCDNLoader { }
@@ -51,7 +77,7 @@ const noP2P: MakeBilibiliGreatThanEverBeforeModule = {
             value = String(value);
           }
           try {
-            value = replaceP2P(value);
+            value = replaceP2P(value, getCDNDomain(), 'HTMLMediaElement.prototype.src');
           } catch (e) {
             logger.error('Failed to handle HTMLMediaElement.prototype.src setter', e, { value });
           }
@@ -65,7 +91,8 @@ const noP2P: MakeBilibiliGreatThanEverBeforeModule = {
       try {
         xhrOpenArgs[1] = replaceP2P(
           xhrOpenArgs[1],
-          rBackupCdn.exec(document.head.innerHTML)?.[0]
+          getCDNDomain(),
+          'XMLHttpRequest.prototype.open'
         );
       } catch (e) {
         logger.error('Failed to replace P2P for XMLHttpRequest.prototype.open', e, { xhrUrl: xhrOpenArgs[1] });
@@ -75,13 +102,11 @@ const noP2P: MakeBilibiliGreatThanEverBeforeModule = {
     });
 
     onBeforeFetch((fetchArgs: [RequestInfo | URL, RequestInit?]) => {
-      const cdnDomain = rBackupCdn.exec(document.head.innerHTML)?.[0];
-
       let input = fetchArgs[0];
       if (typeof input === 'string' || input instanceof URL) {
-        input = replaceP2P(input, cdnDomain);
+        input = replaceP2P(input, getCDNDomain(), 'fetch');
       } else if (input instanceof Request) {
-        input = new Request(replaceP2P(input.url, cdnDomain), input);
+        input = new Request(replaceP2P(input.url, getCDNDomain(), 'fetch'), input);
       } else {
         const _: never = input;
         // input = replaceP2P(String(input), cdnDomain);
@@ -96,7 +121,7 @@ const noP2P: MakeBilibiliGreatThanEverBeforeModule = {
 
 export default noP2P;
 
-function replaceP2P(url: string | URL, cdnDomain = 'upos-sz-mirrorcoso1.bilivideo.com'): string | URL {
+function replaceP2P(url: string | URL, cdnDomain: string, meta = ''): string | URL {
   try {
     if (typeof url === 'string') {
       if (url.startsWith('//')) {
@@ -108,13 +133,13 @@ function replaceP2P(url: string | URL, cdnDomain = 'upos-sz-mirrorcoso1.bilivide
     if (hostname.endsWith('.mcdn.bilivideo.cn')) {
       url.hostname = cdnDomain;
       url.port = '443';
-      logger.info(`P2P replaced: ${hostname} -> ${cdnDomain}`);
+      logger.info(`P2P replaced: ${hostname} -> ${cdnDomain}`, { meta });
     } else if (hostname.endsWith('.szbdyd.com')) {
       const xy_usource = url.searchParams.get('xy_usource');
       if (xy_usource) {
         url.hostname = xy_usource;
         url.port = '443';
-        logger.info(`P2P replaced: ${hostname} -> ${xy_usource}`);
+        logger.info(`P2P replaced: ${hostname} -> ${xy_usource}`, { meta });
       }
     }
 
