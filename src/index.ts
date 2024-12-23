@@ -14,6 +14,7 @@ import removeUselessUrlParams from './modules/remove-useless-url-params';
 import useSystemFonts from './modules/use-system-fonts';
 import type { OnXhrOpenHook } from './types';
 import type { MakeBilibiliGreatThanEverBeforeHook, MakeBilibiliGreatThanEverBeforeModule, OnBeforeFetchHook } from './types';
+import { onDOMContentLoaded } from './utils/on-load-event';
 
 (() => {
   const modules: MakeBilibiliGreatThanEverBeforeModule[] = [
@@ -82,11 +83,13 @@ import type { MakeBilibiliGreatThanEverBeforeHook, MakeBilibiliGreatThanEverBefo
   }
 
   // Add Style
-  const head = document.head || document.getElementsByTagName('head')[0];
-  const style = document.createElement('style');
-  style.setAttribute('type', 'text/css');
-  style.textContent = styles.join('\n');
-  head.appendChild(style);
+  onDOMContentLoaded(() => {
+    const head = document.head || document.getElementsByTagName('head')[0];
+    const style = document.createElement('style');
+    style.setAttribute('type', 'text/css');
+    style.textContent = styles.join('\n');
+    head.appendChild(style);
+  });
 
   // Override fetch
   (($fetch) => {
