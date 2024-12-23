@@ -3,6 +3,9 @@
   "version": "1.0.1",
   "description": "A fork of @kookxiang's userscript \"Make Bilibili Great Again\", but with many experimental features",
   "main": "./dist/make-bilibili-great-than-ever-before.user.js",
+  "files": [
+    "dist"
+  ],
   "scripts": {
     "lint": "eslint --format=sukka .",
     "build": "rollup -c rollup.config.ts --configPlugin=swc3 --bundleConfigAsCjs",
