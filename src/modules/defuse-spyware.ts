@@ -36,17 +36,17 @@ const defuseSpyware: MakeBilibiliGreatThanEverBeforeModule = {
       enumerable: true
     });
 
-    const SentryHub = createMockClass('SentryHub');
+    const SentryHub = class { bindClient = noop; };
 
     const fakeSentry = {
       SDK_NAME: 'sentry.javascript.browser',
       SDK_VERSION: '0.0.1145141919810',
-      BrowserClient: createMockClass('Sentry.BrowserClient'),
+      BrowserClient: class {},
       Hub: SentryHub,
       Integrations: {
-        Vue: createMockClass('Sentry.Integrations.Vue'),
-        GlobalHandlers: createMockClass('Sentry.Integrations.GlobalHandlers'),
-        InboundFilters: createMockClass('Sentry.Integrations.InboundFilters')
+        Vue: class {},
+        GlobalHandlers: class {},
+        InboundFilters: class {}
       },
       init: noop,
       configureScope: noop,
@@ -69,8 +69,8 @@ const defuseSpyware: MakeBilibiliGreatThanEverBeforeModule = {
       enumerable: true
     });
 
-    const mReport = createMockClass('MReport');
-    Object.defineProperty(unsafeWindow, 'MReport', {
+    const mReport = createMockClass('MReporter');
+    Object.defineProperty(unsafeWindow, 'MReporter', {
       get() {
         return mReport;
       },
@@ -79,7 +79,14 @@ const defuseSpyware: MakeBilibiliGreatThanEverBeforeModule = {
       enumerable: true
     });
 
-    const reporterPb = createMockClass('ReporterPb');
+    const reporterPb = class {
+      click = noop;
+      custom = noop;
+      exposure = noop;
+      report = noop;
+      tech = noop;
+      pv = noop;
+    };
     Object.defineProperty(unsafeWindow, 'ReporterPb', {
       get() {
         return reporterPb;
@@ -89,7 +96,12 @@ const defuseSpyware: MakeBilibiliGreatThanEverBeforeModule = {
       enumerable: true
     });
 
-    const biliUserFp = createMockClass('__biliUserFp__');
+    const biliUserFp = {
+      init: noop,
+      queryUserLog() {
+        return [];
+      }
+    };
 
     Object.defineProperty(unsafeWindow, '__biliUserFp__', {
       get() { return biliUserFp; },

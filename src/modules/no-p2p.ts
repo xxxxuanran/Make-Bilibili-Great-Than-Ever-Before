@@ -124,6 +124,11 @@ export default noP2P;
 function replaceP2P(url: string | URL, cdnDomain: string, meta = ''): string | URL {
   try {
     if (typeof url === 'string') {
+      // early bailout for better performance
+      if (!url.includes('.mcdn.bilivideo.cn') && !url.includes('.szbdyd.com')) {
+        return url;
+      }
+
       if (url.startsWith('//')) {
         url = unsafeWindow.location.protocol + url;
       }
