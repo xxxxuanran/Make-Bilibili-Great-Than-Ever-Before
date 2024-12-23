@@ -6,7 +6,11 @@
     "GM.notification"
   ],
   "run-at": "document-start",
-  "match": ["https://*.bilibili.com/*"],
+  "match": [
+    "https://www.bilibili.com/*",
+    "https://t.bilibili.com/*",
+    "https://live.bilibili.com/*"
+  ],
   "updateURL": "https://unpkg.com/make-bilibili-great-than-ever-before@latest/dist/make-bilibili-great-than-ever-before.meta.js",
   "downloadURL": "https://unpkg.com/make-bilibili-great-than-ever-before@latest/dist/make-bilibili-great-than-ever-before.user.js"
 }

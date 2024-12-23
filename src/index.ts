@@ -57,36 +57,36 @@ import { onDOMContentLoaded } from './utils/on-load-event';
 
   for (const module of modules) {
     if (module.any) {
-      logger.trace(`[${module.name}] "any"`);
+      logger.log(`[${module.name}] "any" ${unsafeWindow.location.href}`);
       module.any(hook);
     }
     switch (hostname) {
       case 'www.bilibili.com': {
         if (pathname.startsWith('/read/cv')) {
           if (module.onCV) {
-            logger.trace(`[${module.name}] "onCV"`);
+            logger.log(`[${module.name}] "onCV" ${unsafeWindow.location.href}`);
             module.onCV(hook);
           }
         } else if (pathname.startsWith('/video/')) {
           if (module.onVideo) {
-            logger.trace(`[${module.name}] "onVideo"`);
+            logger.log(`[${module.name}] "onVideo" ${unsafeWindow.location.href}`);
             module.onVideo(hook);
           }
           if (module.onVideoOrBangumi) {
-            logger.trace(`[${module.name}] "onVideoOrBangumi"`);
+            logger.log(`[${module.name}] "onVideoOrBangumi" ${unsafeWindow.location.href}`);
             module.onVideoOrBangumi(hook);
           }
         } else if (pathname.startsWith('/bangumi/play/')) {
           if (module.onVideo) {
-            logger.trace(`[${module.name}] "onVideo"`);
+            logger.log(`[${module.name}] "onVideo" ${unsafeWindow.location.href}`);
             module.onVideo(hook);
           }
           if (module.onBangumi) {
-            logger.trace(`[${module.name}] "onBangumi"`);
+            logger.log(`[${module.name}] "onBangumi" ${unsafeWindow.location.href}`);
             module.onBangumi(hook);
           }
           if (module.onVideoOrBangumi) {
-            logger.trace(`[${module.name}] "onVideoOrBangumi"`);
+            logger.log(`[${module.name}] "onVideoOrBangumi" ${unsafeWindow.location.href}`);
             module.onVideoOrBangumi(hook);
           }
         }
@@ -94,14 +94,14 @@ import { onDOMContentLoaded } from './utils/on-load-event';
       }
       case 'live.bilibili.com': {
         if (module.onLive) {
-          logger.trace(`[${module.name}] "onLive"`);
+          logger.log(`[${module.name}] "onLive" ${unsafeWindow.location.href}`);
           module.onLive(hook);
         }
         break;
       }
       case 't.bilibili.com': {
         if (module.onStory) {
-          logger.trace(`[${module.name}] "onStory"`);
+          logger.log(`[${module.name}] "onStory" ${unsafeWindow.location.href}`);
           module.onStory(hook);
         }
         break;
