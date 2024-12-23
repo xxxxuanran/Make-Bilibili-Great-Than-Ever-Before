@@ -1,18 +1,43 @@
 # Make Bilibili Great Than Ever Before
 
-基于 @kookxiang 的 [Make Bilibili Great Again](https://greasyfork.org/en/scripts/415714-make-bilibili-great-again) fork，但是添加了大量试验性特性。其中一些特性最终会被合并回 `Make Bilibili Great Again`。
+The name came from one of [Donald J. Trump's 2024 Presidential Campaign Slogan](http://web.archive.org/web/20241213152433/https://www.npr.org/2024/06/20/g-s1-4833/trump-too-big-to-rig-drill-baby-swamp-the-vote-rally-maga-2024). The project is a fork of [Make Bilibili Great Again](https://greasyfork.org/en/scripts/415714-make-bilibili-great-again) but rewritten in TypeScript, trying some experimental features and experimental writing styles. Some of these features will eventually be merged back into `Make Bilibili Great Again`. It supports the following UserScript managers:
 
-## 特性
+- [Tampermonkey](https://www.tampermonkey.net/)
+- [Violentmonkey](https://violentmonkey.github.io/)
+- [AdGuard](https://adguard.com/) (As an Extension)
 
-- 禁用叔叔日志上报和用户跟踪的无限请求风暴
-- 增强直播（原画画质、其他修复）
-- 修复文章复制
-- 防止叔叔通过广告给自己赚棺材钱
-- 防止叔叔用 P2P CDN 省下纸钱
-- 通过禁用 WebRTC 防止叔叔通过 P2P 省下棺材钱
-- 首页广告去除和样式优化
-- 动态页面优化
-- 播放器视频裁切
-- 去除叔叔去世时的全站黑白效果
-- 去除 URL 中的无用追踪参数
-- 去除鸿蒙字体，强制使用系统默认字体
+## Installation
+
+```
+https://unpkg.com/make-bilibili-great-than-ever-before@latest/dist/make-bilibili-great-than-ever-before.user.js
+```
+
+## Feature
+
+- Disable Bilibili's infinite request retry storm for Log Reporting and User Tracking
+- Enhance Live (Original Stream Quality and some other fixes)
+- Fix Article copy
+- Prevent Bilibili from saving money (on CR's coffins) by using PCDN
+- Prevent Bilibili from saving money (on CR's coffins) by stealing user bandwidth through WebRTC P2P
+- Remove Homepage Ads and style optimization
+- Story List Optimization
+- Fit player video width
+- Remove the black filter effect (RIP CR)
+- Remove useless tracking parameters from URLs
+- Remove Harmony Fonts and force the usage of system default font
+
+## License
+
+[MIT](./LICENSE)
+
+----
+
+**Make Bilibili Great Than Ever Before** © [Sukka](https://github.com/SukkaW), Authored and maintained by Sukka with help from contributors ([list](https://github.com/SukkaW/Make-Bilibili-Great-Than-Ever-Before/graphs/contributors)).
+
+> [Personal Website](https://skk.moe) · [Blog](https://blog.skk.moe) · GitHub [@SukkaW](https://github.com/SukkaW) · Telegram Channel [@SukkaChannel](https://t.me/SukkaChannel) · Mastodon [@sukka@acg.mn](https://acg.mn/@sukka) · Bluesky [@skk.moe](https://bsky.app/profile/skk.moe) · Twitter [@isukkaw](https://twitter.com/isukkaw) · Keybase [@sukka](https://keybase.io/sukka)
+
+<p align="center">
+  <a href="https://github.com/sponsors/SukkaW/">
+    <img src="https://sponsor.cdn.skk.moe/sponsors.svg"/>
+  </a>
+</p>
