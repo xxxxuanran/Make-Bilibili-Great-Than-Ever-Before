@@ -5,8 +5,8 @@
     "unsafeWindow",
     "GM.notification"
   ],
-  "run-at": "document-end",
-  "match": ["*://*/*"],
+  "run-at": "document-body",
+  "match": ["https://*.bilibili.com/*"],
   "updateURL": "https://unpkg.com/make-bilibili-great-than-ever-before@latest/dist/make-bilibili-great-than-ever-before.meta.js",
   "downloadURL": "https://unpkg.com/make-bilibili-great-than-ever-before@latest/dist/make-bilibili-great-than-ever-before.user.js"
 }

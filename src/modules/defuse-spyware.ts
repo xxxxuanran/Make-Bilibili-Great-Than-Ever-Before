@@ -4,7 +4,6 @@ import { noop, trueFn } from 'foxts/noop';
 import { getUrlFromRequest } from '../utils/get-url-from-request';
 import { createMockClass } from '../utils/mock-class';
 import type { MakeBilibiliGreatThanEverBeforeModule } from '../types';
-import { logger } from '../logger';
 
 declare global {
   interface Window {
@@ -15,27 +14,29 @@ declare global {
 
 const defuseSpyware: MakeBilibiliGreatThanEverBeforeModule = {
   any({ onBeforeFetch, onXhrOpen }) {
-    onXhrOpen((args, xhr) => {
+    onXhrOpen((args) => {
       let url = args[1];
       if (typeof url !== 'string') {
         url = url.href;
       }
 
       if (url.includes('data.bilibili.com')) {
-        xhr.send = noop;
         return null;
       }
 
       return args;
     });
 
-    unsafeWindow.navigator.sendBeacon = trueFn;
-
-    unsafeWindow.MReporter = createMockClass('MReporter');
-
-    const SentryHub = createMockClass('SentryHub', {}, {
-      bindClient: noop
+    Object.defineProperty(unsafeWindow.navigator, 'sendBeacon', {
+      get() {
+        return trueFn;
+      },
+      set: noop,
+      configurable: false,
+      enumerable: true
     });
+
+    const SentryHub = createMockClass('SentryHub');
 
     const fakeSentry = {
       SDK_NAME: 'sentry.javascript.browser',
@@ -102,9 +103,7 @@ const defuseSpyware: MakeBilibiliGreatThanEverBeforeModule = {
     onBeforeFetch((fetchArgs) => {
       const url = getUrlFromRequest(fetchArgs[0]);
 
-      if (url === null) {
-        logger.error('Invalid requestInfo', fetchArgs[0]);
-      } else if (typeof url === 'string' && url.includes('data.bilibili.com')) {
+      if (typeof url === 'string' && url.includes('data.bilibili.com')) {
         return new Response();
       };
 

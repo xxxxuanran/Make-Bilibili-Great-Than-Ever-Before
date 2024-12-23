@@ -1,3 +1,4 @@
+import { noop } from 'foxts/noop';
 import { logger } from './logger';
 import defuseSpyware from './modules/defuse-spyware';
 import enhanceLive from './modules/enhance-live';
@@ -89,23 +90,29 @@ import type { MakeBilibiliGreatThanEverBeforeHook, MakeBilibiliGreatThanEverBefo
 
   // Override fetch
   (($fetch) => {
-    unsafeWindow.fetch = function (...fetchArgs) {
+    unsafeWindow.fetch = function (...$fetchArgs) {
       let abortFetch = false;
+      let fetchArgs: typeof $fetchArgs | null | Response = $fetchArgs;
       let mockResponse: Response | null = null;
       for (const obBeforeFetch of onBeforeFetchHooks) {
-        const result = obBeforeFetch(fetchArgs);
-        if (result === null) {
-          abortFetch = true;
-          break;
-        } else if (result instanceof Response) {
-          abortFetch = true;
-          mockResponse = result;
-          break;
+        try {
+          fetchArgs = obBeforeFetch($fetchArgs);
+          if (fetchArgs === null) {
+            abortFetch = true;
+            break;
+          } else if (fetchArgs instanceof Response) {
+            abortFetch = true;
+            mockResponse = fetchArgs;
+            break;
+          }
+        } catch (e) {
+          logger.error('Failed to replace fetcherArgs', e, { fetchArgs: $fetchArgs });
         }
-        fetchArgs = result;
       }
 
       if (abortFetch) {
+        logger.info('Fetch aborted', { fetchArgs, mockResponse });
+
         let resp = mockResponse ?? new Response();
         for (const onResponse of onResponseHooks) {
           resp = onResponse(resp);
@@ -113,18 +120,17 @@ import type { MakeBilibiliGreatThanEverBeforeHook, MakeBilibiliGreatThanEverBefo
         return Promise.resolve(resp);
       }
 
-      return Reflect.apply($fetch, this, fetchArgs).then((response) => {
+      return Reflect.apply($fetch, this, $fetchArgs).then((response) => {
         for (const onResponse of onResponseHooks) {
           response = onResponse(response);
         }
         return response;
       });
     };
-    // eslint-disable-next-line @typescript-eslint/unbound-method -- call with Reflect.apply
   })(unsafeWindow.fetch);
 
   (function (open) {
-    globalThis.XMLHttpRequest.prototype.open = function (this: XMLHttpRequest, ...$args: Parameters<XMLHttpRequest['open']>) {
+    unsafeWindow.XMLHttpRequest.prototype.open = function (this: XMLHttpRequest, ...$args: Parameters<XMLHttpRequest['open']>) {
       let xhrArgs: Parameters<XMLHttpRequest['open']> | null = $args;
 
       for (const onXhrOpen of onXhrOpenHooks) {
@@ -139,11 +145,14 @@ import type { MakeBilibiliGreatThanEverBeforeHook, MakeBilibiliGreatThanEverBefo
       }
 
       if (xhrArgs === null) {
+        logger.info('XHR aborted', { $args });
+        this.send = noop;
+        this.setRequestHeader = noop;
         return;
       }
 
       return Reflect.apply(open, this, xhrArgs);
     } as typeof XMLHttpRequest.prototype.open;
     // eslint-disable-next-line @typescript-eslint/unbound-method -- called with Reflect.apply
-  }(globalThis.XMLHttpRequest.prototype.open));
+  }(unsafeWindow.XMLHttpRequest.prototype.open));
 })();

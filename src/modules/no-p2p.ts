@@ -44,57 +44,50 @@ const noP2P: MakeBilibiliGreatThanEverBeforeModule = {
   onVideoOrBangumi({ onBeforeFetch, onXhrOpen }) {
     // Patch new Native Player
     (function (HTMLMediaElementPrototypeSrcDescriptor) {
-      Object.defineProperty(globalThis.HTMLMediaElement.prototype, 'src', {
+      Object.defineProperty(unsafeWindow.HTMLMediaElement.prototype, 'src', {
         ...HTMLMediaElementPrototypeSrcDescriptor,
         set(value: any) {
           if (typeof value !== 'string') {
             value = String(value);
           }
-          let newValue: string;
           try {
-            newValue = replaceP2P(new URL(value)).href;
+            value = replaceP2P(value);
           } catch (e) {
-            logger.error('Failed to handle HTMLMediaElement.prototype.src setter', e);
-            newValue = value;
+            logger.error('Failed to handle HTMLMediaElement.prototype.src setter', e, { value });
           }
 
-          HTMLMediaElementPrototypeSrcDescriptor?.set?.call(this, newValue);
+          HTMLMediaElementPrototypeSrcDescriptor?.set?.call(this, value);
         }
       });
-    }(Object.getOwnPropertyDescriptor(globalThis.HTMLMapElement.prototype, 'src')));
+    }(Object.getOwnPropertyDescriptor(unsafeWindow.HTMLMapElement.prototype, 'src')));
 
     onXhrOpen((xhrOpenArgs) => {
       try {
         xhrOpenArgs[1] = replaceP2P(
-          new URL(xhrOpenArgs[1]),
+          xhrOpenArgs[1],
           rBackupCdn.exec(document.head.innerHTML)?.[0]
-        ).href;
+        );
       } catch (e) {
-        logger.error('Failed to replace P2P for XMLHttpRequest.prototype.open', e);
+        logger.error('Failed to replace P2P for XMLHttpRequest.prototype.open', e, { xhrUrl: xhrOpenArgs[1] });
       }
 
       return xhrOpenArgs;
     });
 
     onBeforeFetch((fetchArgs: [RequestInfo | URL, RequestInit?]) => {
-      try {
-        const cdnDomain = rBackupCdn.exec(document.head.innerHTML)?.[0];
+      const cdnDomain = rBackupCdn.exec(document.head.innerHTML)?.[0];
 
-        let input = fetchArgs[0];
-        if (typeof input === 'string') {
-          input = replaceP2P(new URL(input), cdnDomain).href;
-        } else if (input instanceof Request) {
-          input = new Request(replaceP2P(new URL(input.url), cdnDomain).href, input);
-        } else if (input instanceof URL) {
-          input = replaceP2P(input, cdnDomain);
-        } else {
-          input = replaceP2P(new URL(String(input)), cdnDomain).href;
-        }
-
-        fetchArgs[0] = input;
-      } catch (e) {
-        logger.error('Failed to replace P2P for fetch', e);
+      let input = fetchArgs[0];
+      if (typeof input === 'string' || input instanceof URL) {
+        input = replaceP2P(input, cdnDomain);
+      } else if (input instanceof Request) {
+        input = new Request(replaceP2P(input.url, cdnDomain), input);
+      } else {
+        const _: never = input;
+        // input = replaceP2P(String(input), cdnDomain);
       }
+
+      fetchArgs[0] = input;
 
       return fetchArgs;
     });
@@ -103,8 +96,14 @@ const noP2P: MakeBilibiliGreatThanEverBeforeModule = {
 
 export default noP2P;
 
-function replaceP2P(url: URL, cdnDomain = 'upos-sz-mirrorcoso1.bilivideo.com') {
+function replaceP2P(url: string | URL, cdnDomain = 'upos-sz-mirrorcoso1.bilivideo.com'): string | URL {
   try {
+    if (typeof url === 'string') {
+      if (url.startsWith('//')) {
+        url = unsafeWindow.location.protocol + url;
+      }
+      url = new URL(url, unsafeWindow.location.href);
+    }
     const hostname = url.hostname;
     if (hostname.endsWith('.mcdn.bilivideo.cn')) {
       url.hostname = cdnDomain;
@@ -121,7 +120,7 @@ function replaceP2P(url: URL, cdnDomain = 'upos-sz-mirrorcoso1.bilivideo.com') {
 
     return url;
   } catch (e) {
-    logger.error(`Failed to replace P2P for URL (${url.href}):`, e);
+    logger.error(`Failed to replace P2P for URL (${url}):`, e);
     return url;
   }
 }
