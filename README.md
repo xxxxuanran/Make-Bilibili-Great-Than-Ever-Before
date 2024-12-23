@@ -1,6 +1,6 @@
 # Make Bilibili Great Than Ever Before
 
-The name came from one of [Donald J. Trump's 2024 Presidential Campaign Slogan](http://web.archive.org/web/20241213152433/https://www.npr.org/2024/06/20/g-s1-4833/trump-too-big-to-rig-drill-baby-swamp-the-vote-rally-maga-2024). The project is a fork of [Make Bilibili Great Again](https://greasyfork.org/en/scripts/415714-make-bilibili-great-again) but rewritten in TypeScript, trying some experimental features and experimental writing styles. Some of these features will eventually be merged back into `Make Bilibili Great Again`. It supports the following UserScript managers:
+The name came from one of [Donald J. Trump's 2024 Presidential Campaign Slogan](http://web.archive.org/web/20241213152433/https://www.npr.org/2024/06/20/g-s1-4833/trump-too-big-to-rig-drill-baby-swamp-the-vote-rally-maga-2024). The project is a fork of [Make Bilibili Great Again](https://greasyfork.org/en/scripts/415714-make-bilibili-great-again) but rewritten in TypeScript, trying some experimental features and experimental APIs. Some of these features will eventually be merged back into `Make Bilibili Great Again`. It supports the following UserScript managers:
 
 - [Tampermonkey](https://www.tampermonkey.net/)
 - [Violentmonkey](https://violentmonkey.github.io/)
