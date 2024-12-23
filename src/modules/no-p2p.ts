@@ -72,12 +72,13 @@ const noP2P: MakeBilibiliGreatThanEverBeforeModule = {
     (function (HTMLMediaElementPrototypeSrcDescriptor) {
       Object.defineProperty(unsafeWindow.HTMLMediaElement.prototype, 'src', {
         ...HTMLMediaElementPrototypeSrcDescriptor,
-        set(value: any) {
+        set(value: string) {
           if (typeof value !== 'string') {
             value = String(value);
           }
           try {
-            value = replaceP2P(value, getCDNDomain(), 'HTMLMediaElement.prototype.src');
+            const result = replaceP2P(value, getCDNDomain(), 'HTMLMediaElement.prototype.src');
+            value = typeof result === 'string' ? result : result.href;
           } catch (e) {
             logger.error('Failed to handle HTMLMediaElement.prototype.src setter', e, { value });
           }

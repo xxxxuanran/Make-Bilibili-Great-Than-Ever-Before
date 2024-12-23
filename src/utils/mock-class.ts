@@ -3,8 +3,8 @@ import { logger } from '../logger';
 
 export function createMockClass(
   className: string,
-  instanceMethods: Record<string | symbol, ((this: never) => any) | undefined> = {},
-  staticMethods: Record<string | symbol, ((this: never) => any) | undefined> = {}
+  instanceMethods: Record<string | symbol, unknown | undefined> = {},
+  staticMethods: Record<string | symbol, unknown | undefined> = {}
 ) {
   const fakeClassInstance = new Proxy(noop, {
     get(target, prop) {

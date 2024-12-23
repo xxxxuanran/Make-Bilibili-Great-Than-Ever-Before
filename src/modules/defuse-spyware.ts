@@ -3,13 +3,6 @@ import { getUrlFromRequest } from '../utils/get-url-from-request';
 import { createMockClass } from '../utils/mock-class';
 import type { MakeBilibiliGreatThanEverBeforeModule } from '../types';
 
-declare global {
-  interface Window {
-    MReporter: any,
-    Sentry: any
-  }
-}
-
 const defuseSpyware: MakeBilibiliGreatThanEverBeforeModule = {
   name: 'defuse-spyware',
   description: '禁用叔叔日志上报和用户跟踪的无限请求风暴',
