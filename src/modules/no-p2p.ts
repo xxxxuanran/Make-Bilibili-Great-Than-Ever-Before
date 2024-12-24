@@ -3,15 +3,15 @@ import { logger } from '../logger';
 import type { MakeBilibiliGreatThanEverBeforeModule } from '../types';
 import { defineReadonlyProperty } from '../utils/define-readonly-property';
 
-const rBackupCdn = /up[\w-]+\.bilivideo\.com/;
+const rBackupCdn = /(?:up|cn-)[\w-]+\.bilivideo\.com/g;
 
 let prevLocationHref = '';
 let prevCdnDomains: string[] = [];
 function getCDNDomain() {
   if (prevLocationHref !== unsafeWindow.location.href || prevCdnDomains.length === 0) {
     try {
-      const matched = rBackupCdn.exec(document.head.innerHTML);
-      if (matched) {
+      const matched = Array.from(new Set(Array.from(document.head.innerHTML.matchAll(rBackupCdn), match => match[0])));
+      if (matched.length > 0) {
         prevLocationHref = unsafeWindow.location.href;
         prevCdnDomains = matched;
       } else {
@@ -28,7 +28,9 @@ function getCDNDomain() {
     }
   }
 
-  return prevCdnDomains[Math.floor(Math.random() * prevCdnDomains.length)];
+  return prevCdnDomains.length === 1
+    ? prevCdnDomains[0]
+    : prevCdnDomains[Math.floor(Math.random() * prevCdnDomains.length)];
 }
 
 const noP2P: MakeBilibiliGreatThanEverBeforeModule = {
