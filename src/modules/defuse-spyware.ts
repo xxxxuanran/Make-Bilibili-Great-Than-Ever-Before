@@ -16,17 +16,17 @@ const defuseSpyware: MakeBilibiliGreatThanEverBeforeModule = {
       enumerable: true
     });
 
-    const SentryHub = class { bindClient = noop; };
+    const SentryHub = createMockClass('SentryHub');
 
     const fakeSentry = {
       SDK_NAME: 'sentry.javascript.browser',
       SDK_VERSION: '0.0.1145141919810',
-      BrowserClient: class {},
+      BrowserClient: createMockClass('Sentry.BrowserClient'),
       Hub: SentryHub,
       Integrations: {
-        Vue: class {},
-        GlobalHandlers: class {},
-        InboundFilters: class {}
+        Vue: createMockClass('Sentry.Integrations.Vue'),
+        GlobalHandlers: createMockClass('Sentry.Integrations.GlobalHandlers'),
+        InboundFilters: createMockClass('Sentry.Integrations.InboundFilters')
       },
       init: noop,
       configureScope: noop,
@@ -59,14 +59,7 @@ const defuseSpyware: MakeBilibiliGreatThanEverBeforeModule = {
       enumerable: true
     });
 
-    const reporterPb = class {
-      click = noop;
-      custom = noop;
-      exposure = noop;
-      report = noop;
-      tech = noop;
-      pv = noop;
-    };
+    const reporterPb = createMockClass('ReporterPb');
     Object.defineProperty(unsafeWindow, 'ReporterPb', {
       get() {
         return reporterPb;
