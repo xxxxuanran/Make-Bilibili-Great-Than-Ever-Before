@@ -1,6 +1,7 @@
 import { noop } from 'foxts/noop';
 import { logger } from '../logger';
 import type { MakeBilibiliGreatThanEverBeforeModule } from '../types';
+import { defineReadonlyProperty } from '../utils/define-readonly-property';
 
 // based on uBlock Origin's no-webrtc
 // https://github.com/gorhill/uBlock/blob/6c228a8bfdcfc14140cdd3967270df28598c1aaf/src/js/resources/scriptlets.js#L2216
@@ -67,25 +68,11 @@ const noWebRTC: MakeBilibiliGreatThanEverBeforeModule = {
     }
 
     for (const rtc of rtcPcNames) {
-      Object.defineProperty(unsafeWindow, rtc, {
-        get() {
-          return MockPeerConnection;
-        },
-        set: noop,
-        configurable: false,
-        enumerable: true
-      });
+      defineReadonlyProperty(unsafeWindow, rtc, MockPeerConnection);
     }
 
     for (const dc of rtcDcNames) {
-      Object.defineProperty(unsafeWindow, dc, {
-        get() {
-          return MockDataChannel;
-        },
-        set: noop,
-        configurable: false,
-        enumerable: true
-      });
+      defineReadonlyProperty(unsafeWindow, dc, MockDataChannel);
     }
   }
 };

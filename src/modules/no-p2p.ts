@@ -1,6 +1,7 @@
 import { noop } from 'foxts/noop';
 import { logger } from '../logger';
 import type { MakeBilibiliGreatThanEverBeforeModule } from '../types';
+import { defineReadonlyProperty } from '../utils/define-readonly-property';
 
 const rBackupCdn = /up[\w-]+\.bilivideo\.com/;
 
@@ -42,30 +43,9 @@ const noP2P: MakeBilibiliGreatThanEverBeforeModule = {
 
     class MockSeederSDK { }
 
-    Object.defineProperty(unsafeWindow, 'PCDNLoader', {
-      get() {
-        return MockPCDNLoader;
-      },
-      set: noop,
-      enumerable: true,
-      configurable: false
-    });
-    Object.defineProperty(unsafeWindow, 'BPP2PSDK', {
-      get() {
-        return MockBPP2PSDK;
-      },
-      set: noop,
-      enumerable: true,
-      configurable: false
-    });
-    Object.defineProperty(unsafeWindow, 'SeederSDK', {
-      get() {
-        return MockSeederSDK;
-      },
-      set: noop,
-      enumerable: true,
-      configurable: false
-    });
+    defineReadonlyProperty(unsafeWindow, 'PCDNLoader', MockPCDNLoader);
+    defineReadonlyProperty(unsafeWindow, 'BPP2PSDK', MockBPP2PSDK);
+    defineReadonlyProperty(unsafeWindow, 'SeederSDK', MockSeederSDK);
   },
   onVideoOrBangumi({ onBeforeFetch, onXhrOpen }) {
     // Patch new Native Player

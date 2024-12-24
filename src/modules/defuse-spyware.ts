@@ -1,20 +1,14 @@
 import { noop, trueFn } from 'foxts/noop';
 import { getUrlFromRequest } from '../utils/get-url-from-request';
 import { createMockClass } from '../utils/mock-class';
+import { defineReadonlyProperty } from '../utils/define-readonly-property';
 import type { MakeBilibiliGreatThanEverBeforeModule } from '../types';
 
 const defuseSpyware: MakeBilibiliGreatThanEverBeforeModule = {
   name: 'defuse-spyware',
   description: '禁用叔叔日志上报和用户跟踪的无限请求风暴',
   any({ onBeforeFetch, onXhrOpen }) {
-    Object.defineProperty(unsafeWindow.navigator, 'sendBeacon', {
-      get() {
-        return trueFn;
-      },
-      set: noop,
-      configurable: false,
-      enumerable: true
-    });
+    defineReadonlyProperty(unsafeWindow.navigator, 'sendBeacon', trueFn);
 
     const SentryHub = createMockClass('SentryHub');
 
@@ -40,50 +34,17 @@ const defuseSpyware: MakeBilibiliGreatThanEverBeforeModule = {
       wrap: noop
     };
 
-    Object.defineProperty(unsafeWindow, 'Sentry', {
-      get() {
-        return fakeSentry;
-      },
-      set: noop,
-      configurable: false,
-      enumerable: true
-    });
-
-    const mReport = createMockClass('MReporter');
-    Object.defineProperty(unsafeWindow, 'MReporter', {
-      get() {
-        return mReport;
-      },
-      set: noop,
-      configurable: false,
-      enumerable: true
-    });
-
-    const reporterPb = createMockClass('ReporterPb');
-    Object.defineProperty(unsafeWindow, 'ReporterPb', {
-      get() {
-        return reporterPb;
-      },
-      set: noop,
-      configurable: false,
-      enumerable: true
-    });
-
-    const biliUserFp = {
+    defineReadonlyProperty(unsafeWindow, 'Sentry', fakeSentry);
+    defineReadonlyProperty(unsafeWindow, 'MReporter', createMockClass('MReporter'));
+    defineReadonlyProperty(unsafeWindow, 'ReporterPb', createMockClass('ReporterPb'));
+    defineReadonlyProperty(unsafeWindow, '__biliUserFp__', {
       init: noop,
       queryUserLog() {
         return [];
       }
-    };
-
-    Object.defineProperty(unsafeWindow, '__biliUserFp__', {
-      get() { return biliUserFp; },
-      set: noop,
-      configurable: false,
-      enumerable: true
     });
-    Object.defineProperty(unsafeWindow, '__USER_FP_CONFIG__', { get: noop, set: noop, configurable: false, enumerable: true });
-    Object.defineProperty(unsafeWindow, '__MIRROR_CONFIG__', { get: noop, set: noop, configurable: false, enumerable: true });
+    defineReadonlyProperty(unsafeWindow, '__USER_FP_CONFIG__', undefined);
+    defineReadonlyProperty(unsafeWindow, '__MIRROR_CONFIG__', undefined);
 
     onBeforeFetch((fetchArgs) => {
       const url = getUrlFromRequest(fetchArgs[0]);

@@ -1,5 +1,5 @@
-import { noop } from 'foxts/noop';
 import type { MakeBilibiliGreatThanEverBeforeModule } from '../types';
+import { defineReadonlyProperty } from '../utils/define-readonly-property';
 
 declare global {
   interface Window {
@@ -14,14 +14,7 @@ const fixCopyInCV: MakeBilibiliGreatThanEverBeforeModule = {
   description: '修复文章复制功能',
   onCV() {
     if ('original' in unsafeWindow) {
-      Object.defineProperty(unsafeWindow.original, 'reprint', {
-        get() {
-          return '1';
-        },
-        set: noop,
-        configurable: false,
-        enumerable: true
-      });
+      defineReadonlyProperty(unsafeWindow.original, 'reprint', '1');
     }
 
     const holder = document.querySelector('.article-holder');
