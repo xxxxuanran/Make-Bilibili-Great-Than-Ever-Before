@@ -1,5 +1,6 @@
 import type { MakeBilibiliGreatThanEverBeforeModule } from '../types';
 import { tagged as css } from 'foxts/tagged';
+import { onLoaded } from '../utils/on-load-event';
 
 const optimizeStory: MakeBilibiliGreatThanEverBeforeModule = {
   name: 'optimize-story',
@@ -16,7 +17,8 @@ const optimizeStory: MakeBilibiliGreatThanEverBeforeModule = {
     if (!localStorage.WIDE_OPT_OUT) {
       document.documentElement.setAttribute('wide', 'wide');
     }
-    unsafeWindow.addEventListener('load', () => {
+
+    onLoaded(() => {
       const tabContainer = document.querySelector('.bili-dyn-list-tabs__list');
       const placeHolder = document.createElement('div');
       placeHolder.style.flex = '1';
