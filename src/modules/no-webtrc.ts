@@ -45,7 +45,7 @@ const noWebRTC: MakeBilibiliGreatThanEverBeforeModule = {
       }
     }
 
-    class MockPeerConnection implements Pick<RTCPeerConnection, 'close' | 'createDataChannel' | 'createOffer' | 'setRemoteDescription' | 'addEventListener' | 'removeEventListener'> {
+    class MockRTCPeerConnection implements Pick<RTCPeerConnection, 'close' | 'createDataChannel' | 'createOffer' | 'setRemoteDescription' | 'addEventListener' | 'removeEventListener' | 'addIceCandidate'> {
       constructor(cfg: RTCConfiguration) {
         logger.log('Document tried to create an RTCPeerConnection', cfg);
       }
@@ -60,6 +60,7 @@ const noWebRTC: MakeBilibiliGreatThanEverBeforeModule = {
       setRemoteDescription = noop;
       addEventListener = noop;
       removeEventListener = noop;
+      addIceCandidate = noop;
 
       // eslint-disable-next-line @typescript-eslint/class-methods-use-this -- toString
       toString() {
@@ -68,7 +69,7 @@ const noWebRTC: MakeBilibiliGreatThanEverBeforeModule = {
     }
 
     for (const rtc of rtcPcNames) {
-      defineReadonlyProperty(unsafeWindow, rtc, MockPeerConnection);
+      defineReadonlyProperty(unsafeWindow, rtc, MockRTCPeerConnection);
     }
 
     for (const dc of rtcDcNames) {
