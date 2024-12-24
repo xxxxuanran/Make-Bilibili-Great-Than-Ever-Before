@@ -17,5 +17,6 @@ export interface MakeBilibiliGreatThanEverBeforeHook {
   addStyle(this: void, css: string): void,
   onBeforeFetch(this: void, cb: OnBeforeFetchHook): void,
   onResponse(this: void, cb: (response: Response) => Response): void,
-  onXhrOpen(this: void, cb: OnXhrOpenHook): void
+  onXhrOpen(this: void, cb: OnXhrOpenHook): void,
+  onlyCallOnce(this: void, fn: () => void): void
 };

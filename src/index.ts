@@ -15,10 +15,12 @@ import useSystemFonts from './modules/use-system-fonts';
 import type { OnXhrOpenHook } from './types';
 import type { MakeBilibiliGreatThanEverBeforeHook, MakeBilibiliGreatThanEverBeforeModule, OnBeforeFetchHook } from './types';
 import { onDOMContentLoaded } from './utils/on-load-event';
+import disableAV1 from './modules/disable-av1';
 
 ;((unsafeWindow) => {
   const modules: MakeBilibiliGreatThanEverBeforeModule[] = [
     defuseSpyware,
+    disableAV1,
     enhanceLive,
     fixCopyInCV,
     noAd,
@@ -37,6 +39,15 @@ import { onDOMContentLoaded } from './utils/on-load-event';
   const onResponseHooks = new Set<(response: Response) => Response>();
   const onXhrOpenHooks = new Set<OnXhrOpenHook>();
 
+  const fnWs = new WeakSet();
+  function onlyCallOnce(fn: () => void) {
+    if (fnWs.has(fn)) {
+      return;
+    }
+    fnWs.add(fn);
+    fn();
+  }
+
   const hook: MakeBilibiliGreatThanEverBeforeHook = {
     addStyle(style: string) {
       styles.push(style);
@@ -49,7 +60,8 @@ import { onDOMContentLoaded } from './utils/on-load-event';
     },
     onXhrOpen(cb) {
       onXhrOpenHooks.add(cb);
-    }
+    },
+    onlyCallOnce
   };
 
   const hostname = unsafeWindow.location.hostname;

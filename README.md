@@ -15,6 +15,7 @@ https://unpkg.com/make-bilibili-great-than-ever-before@latest/dist/make-bilibili
 ## Feature
 
 - Disable Bilibili's infinite request retry storm for Log Reporting and User Tracking
+- Prevent Bilibili using AV1 codec to burn your CPU and saving money (on CR's coffins).
 - Enhance Live (Original Stream Quality and some other fixes)
 - Fix Article copy
 - Prevent Bilibili from saving money (on CR's coffins) by using PCDN
