@@ -48,7 +48,7 @@ function removeTracking(url: string | URL | null | undefined) {
       for (const item of uselessUrlParams) {
         if (typeof item === 'string') {
           if (item === key) url.searchParams.delete(key);
-        } else if (item instanceof RegExp && item.test(key)) {
+        } else if ('test' in item && item.test(key)) {
           url.searchParams.delete(key);
         };
       };

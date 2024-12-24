@@ -84,9 +84,9 @@ const noP2P: MakeBilibiliGreatThanEverBeforeModule = {
 
     onBeforeFetch((fetchArgs: [RequestInfo | URL, RequestInit?]) => {
       let input = fetchArgs[0];
-      if (typeof input === 'string' || input instanceof URL) {
+      if (typeof input === 'string' || 'href' in input) {
         input = replaceP2P(input, getCDNDomain(), 'fetch');
-      } else if (input instanceof Request) {
+      } else if ('url' in input) {
         input = new Request(replaceP2P(input.url, getCDNDomain(), 'fetch'), input);
       } else {
         const _: never = input;

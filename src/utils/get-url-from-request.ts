@@ -4,10 +4,10 @@ export function getUrlFromRequest(request: RequestInfo | URL): string | null {
   if (typeof request === 'string') {
     return request;
   }
-  if (request instanceof URL) {
+  if ('href' in request) {
     return request.href;
   }
-  if (request instanceof Request) {
+  if ('url' in request) {
     return request.url;
   }
 

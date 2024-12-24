@@ -143,7 +143,7 @@ import disableAV1 from './modules/disable-av1';
           if (fetchArgs === null) {
             abortFetch = true;
             break;
-          } else if (fetchArgs instanceof Response) {
+          } else if ('body' in fetchArgs) {
             abortFetch = true;
             mockResponse = fetchArgs;
             break;
