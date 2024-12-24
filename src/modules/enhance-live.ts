@@ -1,5 +1,6 @@
 import type { MakeBilibiliGreatThanEverBeforeModule } from '../types';
 import { getUrlFromRequest } from '../utils/get-url-from-request';
+import { tagged as css } from 'foxts/tagged';
 
 declare global {
   interface Window {
@@ -20,10 +21,10 @@ const enhanceLive: MakeBilibiliGreatThanEverBeforeModule = {
     setInterval(() => (recentErrors > 0 ? recentErrors / 2 : null), 10000);
 
     // 还得帮叔叔修 bug，唉
-    addStyle('div[data-cy=EvaRenderer_LayerWrapper]:has(.player) { z-index: 999999; }');
+    addStyle(css`div[data-cy=EvaRenderer_LayerWrapper]:has(.player) { z-index: 999999; }`);
 
     // 去台标
-    addStyle('.web-player-icon-roomStatus { display: none !important; }');
+    addStyle(css`.web-player-icon-roomStatus { display: none !important; }`);
 
     // 修复直播画质
     onBeforeFetch((fetchArgs) => {

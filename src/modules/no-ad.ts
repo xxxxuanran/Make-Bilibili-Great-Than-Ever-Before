@@ -1,4 +1,5 @@
 import type { MakeBilibiliGreatThanEverBeforeModule } from '../types';
+import { tagged as css } from 'foxts/tagged';
 
 declare global {
   interface Window {
@@ -16,7 +17,22 @@ const noAd: MakeBilibiliGreatThanEverBeforeModule = {
   description: '防止叔叔通过广告给自己赚棺材钱',
   any({ addStyle }) {
     // 去广告
-    addStyle('.ad-report, a[href*="cm.bilibili.com"] { display: none !important; }');
+    addStyle(css`
+      .ad-report { display: none !important; }
+      a[href*="cm.bilibili.com"] {
+        width: 1px !important;
+        height: 1px !important;
+        opacity: 0 !important;
+        pointer-events: none !important;
+        position: absolute !important;
+        padding: 0 !important;
+        margin: -1px !important;
+        overflow: hidden !important;
+        clip: rect(0, 0, 0, 0) !important;
+        white-space: nowrap !important;
+        border-width: 0 !important;
+      }
+    `);
 
     if (unsafeWindow.__INITIAL_STATE__?.adData) {
       for (const key in unsafeWindow.__INITIAL_STATE__.adData) {
