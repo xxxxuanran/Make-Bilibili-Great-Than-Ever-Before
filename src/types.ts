@@ -25,5 +25,6 @@ export interface MakeBilibiliGreatThanEverBeforeHook {
   onBeforeFetch(this: void, cb: OnBeforeFetchHook): void,
   onResponse(this: void, cb: (response: Response) => Response): void,
   onXhrOpen(this: void, cb: OnXhrOpenHook): void,
+  onAfterXhrOpen(this: void, cb: (xhr: XMLHttpRequest) => void): void,
   onlyCallOnce(this: void, fn: () => void): void
 };

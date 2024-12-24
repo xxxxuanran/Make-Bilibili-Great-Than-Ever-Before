@@ -38,6 +38,7 @@ import disableAV1 from './modules/disable-av1';
   const onBeforeFetchHooks = new Set<OnBeforeFetchHook>();
   const onResponseHooks = new Set<(response: Response) => Response>();
   const onXhrOpenHooks = new Set<OnXhrOpenHook>();
+  const onAfterXhrOpenHooks = new Set<(xhr: XMLHttpRequest) => void>();
 
   const fnWs = new WeakSet();
   function onlyCallOnce(fn: () => void) {
@@ -60,6 +61,9 @@ import disableAV1 from './modules/disable-av1';
     },
     onXhrOpen(cb) {
       onXhrOpenHooks.add(cb);
+    },
+    onAfterXhrOpen(cb) {
+      onAfterXhrOpenHooks.add(cb);
     },
     onlyCallOnce
   };
@@ -190,7 +194,15 @@ import disableAV1 from './modules/disable-av1';
         return;
       }
 
-      return Reflect.apply(open, this, xhrArgs);
+      Reflect.apply(open, this, xhrArgs);
+
+      for (const onAfterXhrOpen of onAfterXhrOpenHooks) {
+        try {
+          onAfterXhrOpen(this);
+        } catch (e) {
+          logger.error('Failed to call onAfterXhrOpen', e);
+        }
+      }
     } as typeof XMLHttpRequest.prototype.open;
     // eslint-disable-next-line @typescript-eslint/unbound-method -- called with Reflect.apply
   }(unsafeWindow.XMLHttpRequest.prototype.open));
