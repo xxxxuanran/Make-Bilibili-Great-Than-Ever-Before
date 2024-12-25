@@ -1,5 +1,5 @@
 import { noop } from 'foxts/noop';
-import { logger } from '../logger';
+import type { Noop } from 'foxts/noop';
 import type { MakeBilibiliGreatThanEverBeforeModule } from '../types';
 import { defineReadonlyProperty } from '../utils/define-readonly-property';
 
@@ -34,10 +34,17 @@ const noWebRTC: MakeBilibiliGreatThanEverBeforeModule = {
     }
 
     class MockDataChannel implements Pick<RTCDataChannel, 'close' | 'send' | 'addEventListener' | 'removeEventListener'> {
-      close = noop;
-      send = noop;
-      addEventListener = noop;
-      removeEventListener = noop;
+      declare close: Noop;
+      declare send: Noop;
+      declare addEventListener: Noop;
+      declare removeEventListener: Noop;
+
+      static {
+        this.prototype.close = noop;
+        this.prototype.send = noop;
+        this.prototype.addEventListener = noop;
+        this.prototype.removeEventListener = noop;
+      }
 
       // eslint-disable-next-line @typescript-eslint/class-methods-use-this -- toString
       toString() {
@@ -46,23 +53,28 @@ const noWebRTC: MakeBilibiliGreatThanEverBeforeModule = {
     }
 
     class MockRTCPeerConnection implements Pick<RTCPeerConnection, 'close' | 'createDataChannel' | 'createOffer' | 'setRemoteDescription' | 'addEventListener' | 'removeEventListener' | 'addIceCandidate'> {
-      constructor(cfg: RTCConfiguration) {
-        logger.log('Document tried to create an RTCPeerConnection', cfg);
-      }
-
-      close = noop;
       // eslint-disable-next-line @typescript-eslint/class-methods-use-this -- mock
       createDataChannel() {
         return new MockDataChannel() as RTCDataChannel;
-      };
+      }
 
-      createOffer = noop;
-      setRemoteDescription = noop;
-      addEventListener = noop;
-      removeEventListener = noop;
-      addIceCandidate = noop;
+      declare close: Noop;
+      declare createOffer: Noop;
+      declare setRemoteDescription: Noop;
+      declare addEventListener: Noop;
+      declare removeEventListener: Noop;
+      declare addIceCandidate: Noop;
 
-      // eslint-disable-next-line @typescript-eslint/class-methods-use-this -- toString
+      static {
+        this.prototype.close = noop;
+        this.prototype.createOffer = noop;
+        this.prototype.setRemoteDescription = noop;
+        this.prototype.addEventListener = noop;
+        this.prototype.removeEventListener = noop;
+        this.prototype.addIceCandidate = noop;
+      }
+
+      // eslint-disable-next-line @typescript-eslint/class-methods-use-this -- mock
       toString() {
         return '[object RTCPeerConnection]';
       }
