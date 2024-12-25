@@ -19,7 +19,7 @@
   "author": "SukkaW <https://skk.moe>",
   "license": "MIT",
   "dependencies": {
-    "foxts": "^1.0.11"
+    "foxts": "^1.0.12"
   },
   "devDependencies": {
     "@eslint-sukka/node": "^6.13.0",
