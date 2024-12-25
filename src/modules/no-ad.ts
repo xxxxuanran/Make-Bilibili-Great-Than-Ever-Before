@@ -37,8 +37,9 @@ const noAd: MakeBilibiliGreatThanEverBeforeModule = {
     }
      */
     addStyle(css`
-      .ad-report { display: none !important; }
-      a[href*="cm.bilibili.com"] {
+      a[href*="cm.bilibili.com"],
+      .desktop-download-tip,
+      .ad-report {
         width: 1px !important;
         height: 1px !important;
         opacity: 0 !important;
