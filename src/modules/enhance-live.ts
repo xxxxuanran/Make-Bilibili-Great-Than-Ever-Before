@@ -1,3 +1,4 @@
+import { logger } from '../logger';
 import type { MakeBilibiliGreatThanEverBeforeModule } from '../types';
 import { ErrorCounter } from '../utils/error-counter';
 import { getUrlFromRequest } from '../utils/get-url-from-request';
@@ -39,9 +40,13 @@ const enhanceLive: MakeBilibiliGreatThanEverBeforeModule = {
         //   return Promise.reject();
         // }
         if (qualityRegexp.test(url)) {
-          fetchArgs[0] = url
+          const newUrl = url
             .replace(qualityRegexp, '$1')
             .replaceAll(/(\d+)_(?:mini|pro)hevc/g, '$1');
+
+          logger.info('force quality', url, '->', newUrl);
+
+          fetchArgs[0] = newUrl;
         }
 
         return fetchArgs;
