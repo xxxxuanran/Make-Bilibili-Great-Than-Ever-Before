@@ -17,6 +17,25 @@ const noAd: MakeBilibiliGreatThanEverBeforeModule = {
   description: '防止叔叔通过广告给自己赚棺材钱',
   any({ addStyle }) {
     // 去广告
+
+    /**
+     * 下面是叔叔家的垃圾前端在 computed 里写副作用检测 AdBlock 是否启用：
+
+    u = () => {
+      var A;
+      if (!h.value)
+        return !1;
+      const _ = "cm."
+        , v = "bilibili.com"
+        , f = ((A = h.value) == null ? void 0 : A.querySelectorAll(`a[href*="${_}${v}"]`)) || [];
+      for (let y = 0; y < f.length; y++)
+        if (window.getComputedStyle(f[y]).display == "none")
+          return !0;
+      return !1
+
+      我们只要 display 不是 none 就行了
+    }
+     */
     addStyle(css`
       .ad-report { display: none !important; }
       a[href*="cm.bilibili.com"] {
