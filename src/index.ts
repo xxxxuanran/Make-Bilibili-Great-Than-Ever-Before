@@ -158,7 +158,7 @@ import disableAV1 from './modules/disable-av1';
       }
 
       if (abortFetch) {
-        logger.info('Fetch aborted', { fetchArgs, mockResponse });
+        logger.info('Fetch aborted', { fetchArgs: $fetchArgs, mockResponse });
 
         return Promise.resolve(mockResponse ?? new Response());
       }
