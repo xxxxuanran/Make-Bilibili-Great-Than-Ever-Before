@@ -14,18 +14,18 @@ https://unpkg.com/make-bilibili-great-than-ever-before@latest/dist/make-bilibili
 
 ## Feature
 
-- Disable Bilibili's infinite request retry storm for Log Reporting and User Tracking
-- Prevent Bilibili using AV1 codec to burn your CPU and saving money (on CR's coffins).
-- Enhance Live (Original Stream Quality and some other fixes)
-- Fix Article copy
-- Prevent Bilibili from saving money (on CR's coffins) by using PCDN
-- Prevent Bilibili from saving money (on CR's coffins) by stealing user bandwidth through WebRTC P2P
+- Disable Bilibili's infinite request retry storm for Log Reporting and User Tracking by completely disable all of them
+- Prevent Bilibili using AV1 codec to save money (on CR's coffins) and burn your CPU/GPU.
+- Enhance Live (Force original stream quality and some other fixes)
+- Defuse article clipboard prevention and enables free copy
+- Prevent Bilibili from saving money (on CR's coffins) by using cheap yet slow PCDN
+- Prevent Bilibili from saving money (on CR's coffins) by stealing your bandwidth through WebRTC P2P
 - Remove Homepage Ads and style optimization
 - Story List Optimization
 - Fit player video width
 - Remove the black filter effect (RIP CR)
 - Remove useless tracking parameters from URLs
-- Remove Harmony Fonts and force the usage of system default font
+- Remove HarmonyOS Fonts and enforce system default font
 
 ## License
 
