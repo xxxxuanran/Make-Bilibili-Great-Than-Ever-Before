@@ -53,7 +53,7 @@ const enhanceLive: MakeBilibiliGreatThanEverBeforeModule = {
     const errorCounter = new ErrorCounter(1000 * 30);
 
     onResponse((response) => {
-      if (response.url.endsWith('.m3u8') || response.url.endsWith('.m4s')) {
+      if (response.url.includes('.m3u8') || response.url.includes('.m4s')) {
         if (!response.ok) {
           errorCounter.recordError();
         }
