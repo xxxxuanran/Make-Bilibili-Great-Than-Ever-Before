@@ -36,7 +36,7 @@ function getCDNDomain() {
 const noP2P: MakeBilibiliGreatThanEverBeforeModule = {
   name: 'no-p2p',
   description: '防止叔叔用 P2P CDN 省下纸钱',
-  any() {
+  any({ onXhrOpen, onBeforeFetch }) {
     class MockPCDNLoader { }
 
     class MockBPP2PSDK {
@@ -48,8 +48,7 @@ const noP2P: MakeBilibiliGreatThanEverBeforeModule = {
     defineReadonlyProperty(unsafeWindow, 'PCDNLoader', MockPCDNLoader);
     defineReadonlyProperty(unsafeWindow, 'BPP2PSDK', MockBPP2PSDK);
     defineReadonlyProperty(unsafeWindow, 'SeederSDK', MockSeederSDK);
-  },
-  onVideoOrBangumi({ onBeforeFetch, onXhrOpen }) {
+
     // Patch new Native Player
     (function (HTMLMediaElementPrototypeSrcDescriptor) {
       Object.defineProperty(unsafeWindow.HTMLMediaElement.prototype, 'src', {
