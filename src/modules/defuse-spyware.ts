@@ -65,6 +65,9 @@ const defuseSpyware: MakeBilibiliGreatThanEverBeforeModule = {
       if (url.includes('data.bilibili.com')) {
         return null;
       }
+      if (url.includes('api.bilibili.com/x/internal/gaia-gateway/ExClimbWuzhi')) {
+        return null;
+      }
 
       return args;
     });
