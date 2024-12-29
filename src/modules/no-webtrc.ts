@@ -3,7 +3,8 @@ import type { Noop } from 'foxts/noop';
 import type { MakeBilibiliGreatThanEverBeforeModule } from '../types';
 import { defineReadonlyProperty } from '../utils/define-readonly-property';
 
-const noopNeverResolvedPromise = () => new Promise(noop);
+const neverResolvedPromise = new Promise(noop);
+const noopNeverResolvedPromise = () => neverResolvedPromise;
 
 // based on uBlock Origin's no-webrtc
 // https://github.com/gorhill/uBlock/blob/6c228a8bfdcfc14140cdd3967270df28598c1aaf/src/js/resources/scriptlets.js#L2216
