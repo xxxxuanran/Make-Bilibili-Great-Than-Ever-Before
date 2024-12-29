@@ -12,7 +12,7 @@ import playerVideoFit from './modules/player-video-fit';
 import removeBlackBackdropFilter from './modules/remove-black-backdrop-filter';
 import removeUselessUrlParams from './modules/remove-useless-url-params';
 import useSystemFonts from './modules/use-system-fonts';
-import type { OnXhrOpenHook } from './types';
+import type { OnXhrOpenHook, XHRDetail, XHROpenArgs } from './types';
 import type { MakeBilibiliGreatThanEverBeforeHook, MakeBilibiliGreatThanEverBeforeModule, OnBeforeFetchHook } from './types';
 import { onDOMContentLoaded } from './utils/on-load-event';
 import disableAV1 from './modules/disable-av1';
@@ -39,6 +39,7 @@ import disableAV1 from './modules/disable-av1';
   const onResponseHooks = new Set<(response: Response) => Response>();
   const onXhrOpenHooks = new Set<OnXhrOpenHook>();
   const onAfterXhrOpenHooks = new Set<(xhr: XMLHttpRequest) => void>();
+  const onXhrResponseHooks = new Set<(method: string, url: string | URL, response: unknown, xhr: XMLHttpRequest) => unknown>();
 
   const fnWs = new WeakSet();
   function onlyCallOnce(fn: () => void) {
@@ -64,6 +65,9 @@ import disableAV1 from './modules/disable-av1';
     },
     onAfterXhrOpen(cb) {
       onAfterXhrOpenHooks.add(cb);
+    },
+    onXhrResponse(cb) {
+      onXhrResponseHooks.add(cb);
     },
     onlyCallOnce
   };
@@ -172,16 +176,22 @@ import disableAV1 from './modules/disable-av1';
     };
   })(unsafeWindow.fetch);
 
-  (function (open) {
-    unsafeWindow.XMLHttpRequest.prototype.open = function (this: XMLHttpRequest, ...$args: Parameters<XMLHttpRequest['open']>) {
-      let xhrArgs: Parameters<XMLHttpRequest['open']> | null = $args;
+  const xhrInstances = new WeakMap<XMLHttpRequest, XHRDetail>();
+
+  unsafeWindow.XMLHttpRequest = class extends unsafeWindow.XMLHttpRequest {
+    open(...$args: XHROpenArgs) {
+      const method = $args[0];
+      const url = $args[1];
+      const xhrDetails: XHRDetail = { method, url, response: null, lastResponseLength: null };
+
+      let xhrArgs: XHROpenArgs | null = $args;
 
       for (const onXhrOpen of onXhrOpenHooks) {
         try {
-          xhrArgs = onXhrOpen($args, this);
           if (xhrArgs === null) {
             break;
           }
+          xhrArgs = onXhrOpen(xhrArgs, this);
         } catch (e) {
           logger.error('Failed to replace P2P for XMLHttpRequest.prototype.open', e);
         }
@@ -194,7 +204,9 @@ import disableAV1 from './modules/disable-av1';
         return;
       }
 
-      Reflect.apply(open, this, xhrArgs);
+      xhrInstances.set(this, xhrDetails);
+
+      super.open.apply(this, xhrArgs as Parameters<XMLHttpRequest['open']>);
 
       for (const onAfterXhrOpen of onAfterXhrOpenHooks) {
         try {
@@ -203,7 +215,47 @@ import disableAV1 from './modules/disable-av1';
           logger.error('Failed to call onAfterXhrOpen', e);
         }
       }
-    } as typeof XMLHttpRequest.prototype.open;
-    // eslint-disable-next-line @typescript-eslint/unbound-method -- called with Reflect.apply
-  }(unsafeWindow.XMLHttpRequest.prototype.open));
+    }
+
+    get response() {
+      const originalResponse = super.response;
+      if (!xhrInstances.has(this)) {
+        return originalResponse;
+      }
+
+      const xhrDetails: XHRDetail = xhrInstances.get(this)!;
+
+      const responseLength = typeof originalResponse === 'string'
+        ? originalResponse.length
+        : null;
+
+      if (xhrDetails.lastResponseLength !== responseLength) {
+        xhrDetails.response = null;
+        xhrDetails.lastResponseLength = responseLength;
+      }
+      if (xhrDetails.response !== null) {
+        return xhrDetails.response;
+      }
+
+      let finalResponse = originalResponse;
+      for (const onXhrResponse of onXhrResponseHooks) {
+        try {
+          finalResponse = onXhrResponse(xhrDetails.method, xhrDetails.url, finalResponse, this);
+        } catch (e) {
+          logger.error('Failed to call onXhrResponse', e);
+        }
+      }
+
+      xhrDetails.response = finalResponse;
+
+      return finalResponse;
+    }
+
+    get responseText() {
+      const response = this.response;
+      return typeof response === 'string'
+        ? response
+        : super.responseText;
+    }
+  };
 })(unsafeWindow);

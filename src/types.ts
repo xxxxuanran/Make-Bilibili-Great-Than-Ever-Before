@@ -10,6 +10,14 @@ export interface MakeBilibiliGreatThanEverBeforeModule {
   onVideoOrBangumi?: (hook: MakeBilibiliGreatThanEverBeforeHook) => void
 }
 
+export interface XHRDetail {
+  method: string,
+  url: string | URL,
+  response: unknown | null,
+  lastResponseLength: number | null
+}
+export type XHROpenArgs = [method: string, url: string | URL, async: boolean, username?: string | null, password?: string | null] | [method: string, url: string | URL];
+
 /**
  * If `null` is returned, the fetch will be nullified.
  * If a `Response` is returned, the fetch will be mocaked with the response.
@@ -18,7 +26,7 @@ export type OnBeforeFetchHook = (fetchArgs: [requestInfo: RequestInfo | URL, req
 /**
  * If `null` is returned, the XMLHttpRequest will be nullified.
  */
-export type OnXhrOpenHook = (xhrOpenArgs: Parameters<XMLHttpRequest['open']>, xhr: XMLHttpRequest) => Parameters<XMLHttpRequest['open']> | null;
+export type OnXhrOpenHook = (xhrOpenArgs: XHROpenArgs, xhr: XMLHttpRequest) => XHROpenArgs | null;
 
 export interface MakeBilibiliGreatThanEverBeforeHook {
   addStyle(this: void, css: string): void,
@@ -26,5 +34,6 @@ export interface MakeBilibiliGreatThanEverBeforeHook {
   onResponse(this: void, cb: (response: Response) => Response): void,
   onXhrOpen(this: void, cb: OnXhrOpenHook): void,
   onAfterXhrOpen(this: void, cb: (xhr: XMLHttpRequest) => void): void,
+  onXhrResponse(this: void, cb: (method: string, url: string | URL, response: unknown, xhr: XMLHttpRequest) => unknown): void,
   onlyCallOnce(this: void, fn: () => void): void
 };
