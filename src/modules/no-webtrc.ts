@@ -33,17 +33,30 @@ const noWebRTC: MakeBilibiliGreatThanEverBeforeModule = {
       rtcDcNames.push('mozRTCDataChannel');
     }
 
-    class MockDataChannel implements Pick<RTCDataChannel, 'close' | 'send' | 'addEventListener' | 'removeEventListener'> {
+    class MockDataChannel implements Pick<RTCDataChannel, 'close' | 'send' | 'addEventListener' | 'removeEventListener' | 'onbufferedamountlow' | 'onclose' | 'onerror' | 'onmessage' | 'onopen'> {
       declare close: Noop;
       declare send: Noop;
       declare addEventListener: Noop;
       declare removeEventListener: Noop;
+
+      declare onbufferedamountlow: Noop;
+      declare onclose: Noop;
+      declare onerror: Noop;
+      declare onmessage: Noop;
+      declare onopen: Noop;
 
       static {
         this.prototype.close = noop;
         this.prototype.send = noop;
         this.prototype.addEventListener = noop;
         this.prototype.removeEventListener = noop;
+        this.prototype.onbufferedamountlow = noop;
+        // eslint-disable-next-line sukka/unicorn/prefer-add-event-listener -- mock
+        this.prototype.onclose = noop;
+        // eslint-disable-next-line sukka/unicorn/prefer-add-event-listener -- mock
+        this.prototype.onerror = noop;
+        // eslint-disable-next-line sukka/unicorn/prefer-add-event-listener -- mock
+        this.prototype.onmessage = noop;
       }
 
       // eslint-disable-next-line @typescript-eslint/class-methods-use-this -- toString
