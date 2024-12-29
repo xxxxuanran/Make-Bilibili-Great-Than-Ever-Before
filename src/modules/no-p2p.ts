@@ -36,7 +36,7 @@ function getCDNDomain() {
 const noP2P: MakeBilibiliGreatThanEverBeforeModule = {
   name: 'no-p2p',
   description: '防止叔叔用 P2P CDN 省下纸钱',
-  any({ onXhrOpen, onBeforeFetch }) {
+  any({ onXhrOpen, onBeforeFetch, onXhrResponse }) {
     class MockPCDNLoader { }
 
     class MockBPP2PSDK {
@@ -83,6 +83,62 @@ const noP2P: MakeBilibiliGreatThanEverBeforeModule = {
       return xhrOpenArgs;
     });
 
+    onXhrResponse((_method, url, response, _xhr) => {
+      if (typeof response === 'string' && url.toString().includes('api.bilibili.com/x/player/wbi/playurl')) {
+        try {
+          const json: object = JSON.parse(response);
+
+          const cdnDomains = new Set<string>();
+
+          function addCDNFromUrl(url: unknown) {
+            if (typeof url === 'string' && !isP2PCDN(url)) {
+              try {
+                cdnDomains.add(new URL(url).hostname);
+              } catch {}
+            }
+          }
+          function extractCDNFromVideoOrAudio(data: unknown) {
+            if (Array.isArray(data)) {
+              for (const videoOrAudio of data) {
+                if ('baseUrl' in videoOrAudio && typeof videoOrAudio.baseUrl === 'string') {
+                  addCDNFromUrl(videoOrAudio.baseUrl);
+                } else if ('base_url' in videoOrAudio && typeof videoOrAudio.base_url === 'string') {
+                  addCDNFromUrl(videoOrAudio.base_url);
+                }
+
+                if ('backupUrl' in videoOrAudio && Array.isArray(videoOrAudio.backupUrl)) {
+                  videoOrAudio.backupUrl.forEach(addCDNFromUrl);
+                } else if ('backup_url' in videoOrAudio && Array.isArray(videoOrAudio.backup_url)) {
+                  videoOrAudio.backup_url.forEach(addCDNFromUrl);
+                }
+              }
+            }
+          }
+
+          if (
+            'data' in json && typeof json.data === 'object' && json.data
+            && 'dash' in json.data && typeof json.data.dash === 'object' && json.data.dash
+          ) {
+            if ('video' in json.data.dash) {
+              extractCDNFromVideoOrAudio(json.data.dash.video);
+            }
+            if ('audio' in json.data.dash) {
+              extractCDNFromVideoOrAudio(json.data.dash.audio);
+            }
+          }
+
+          logger.info('Get CDN domains from Bilibili API', { json, cdnDomains });
+
+          if (cdnDomains.size > 0) {
+            prevLocationHref = unsafeWindow.location.href;
+            prevCdnDomains = Array.from(cdnDomains);
+          }
+        } catch { };
+      }
+
+      return response;
+    });
+
     onBeforeFetch((fetchArgs: [RequestInfo | URL, RequestInit?]) => {
       let input = fetchArgs[0];
       if (typeof input === 'string' || 'href' in input) {
@@ -103,11 +159,15 @@ const noP2P: MakeBilibiliGreatThanEverBeforeModule = {
 
 export default noP2P;
 
+function isP2PCDN(url: string) {
+  return url.includes('.mcdn.bilivideo.cn') || url.includes('.szbdyd.com');
+}
+
 function replaceP2P(url: string | URL, cdnDomain: string, meta = ''): string | URL {
   try {
     if (typeof url === 'string') {
       // early bailout for better performance
-      if (!url.includes('.mcdn.bilivideo.cn') && !url.includes('.szbdyd.com')) {
+      if (!isP2PCDN(url)) {
         return url;
       }
 
