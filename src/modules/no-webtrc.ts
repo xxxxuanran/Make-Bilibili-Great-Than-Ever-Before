@@ -83,6 +83,11 @@ const noWebRTC: MakeBilibiliGreatThanEverBeforeModule = {
           sdp: this.sdp
         };
       }
+
+      // eslint-disable-next-line @typescript-eslint/class-methods-use-this -- toString
+      toString() {
+        return '[object RTCSessionDescription]';
+      }
     }
 
     const mockedRtcSessionDescription = new MockRTCSessionDescription({
