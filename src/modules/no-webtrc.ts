@@ -3,6 +3,8 @@ import type { Noop } from 'foxts/noop';
 import type { MakeBilibiliGreatThanEverBeforeModule } from '../types';
 import { defineReadonlyProperty } from '../utils/define-readonly-property';
 
+const noopNeverResolvedPromise = () => new Promise(noop);
+
 // based on uBlock Origin's no-webrtc
 // https://github.com/gorhill/uBlock/blob/6c228a8bfdcfc14140cdd3967270df28598c1aaf/src/js/resources/scriptlets.js#L2216
 const noWebRTC: MakeBilibiliGreatThanEverBeforeModule = {
@@ -65,7 +67,29 @@ const noWebRTC: MakeBilibiliGreatThanEverBeforeModule = {
       }
     }
 
-    class MockRTCPeerConnection implements Pick<RTCPeerConnection, 'close' | 'createDataChannel' | 'createOffer' | 'setRemoteDescription' | 'addEventListener' | 'removeEventListener' | 'addIceCandidate'> {
+    class MockRTCSessionDescription implements RTCSessionDescription {
+      readonly type: RTCSdpType;
+      readonly sdp: string;
+
+      constructor(init: RTCSessionDescriptionInit) {
+        this.type = init.type;
+        this.sdp = init.sdp || '';
+      }
+
+      toJSON(): RTCSessionDescriptionInit {
+        return {
+          type: this.type,
+          sdp: this.sdp
+        };
+      }
+    }
+
+    const mockedRtcSessionDescription = new MockRTCSessionDescription({
+      type: 'offer',
+      sdp: ''
+    });
+
+    class MockRTCPeerConnection implements Pick<RTCPeerConnection, 'close' | 'createDataChannel' | 'createOffer' | 'setRemoteDescription' | 'addEventListener' | 'removeEventListener' | 'addIceCandidate' | 'setLocalDescription' | 'setConfiguration' | 'localDescription' | 'createAnswer' | 'onicecandidate'> {
       // eslint-disable-next-line @typescript-eslint/class-methods-use-this -- mock
       createDataChannel() {
         return new MockDataChannel() as RTCDataChannel;
@@ -73,18 +97,34 @@ const noWebRTC: MakeBilibiliGreatThanEverBeforeModule = {
 
       declare close: Noop;
       declare createOffer: Noop;
+      declare setLocalDescription: Noop;
       declare setRemoteDescription: Noop;
       declare addEventListener: Noop;
       declare removeEventListener: Noop;
       declare addIceCandidate: Noop;
 
+      declare setConfiguration: Noop;
+
+      declare localDescription: RTCSessionDescription;
+
+      declare createAnswer: Noop;
+
+      declare onicecandidate: Noop;
+
       static {
         this.prototype.close = noop;
-        this.prototype.createOffer = noop;
+        this.prototype.createOffer = noopNeverResolvedPromise;
+        this.prototype.setLocalDescription = noop;
         this.prototype.setRemoteDescription = noop;
         this.prototype.addEventListener = noop;
         this.prototype.removeEventListener = noop;
         this.prototype.addIceCandidate = noop;
+
+        this.prototype.setConfiguration = noop;
+        this.prototype.localDescription = mockedRtcSessionDescription;
+
+        this.prototype.createAnswer = noopNeverResolvedPromise;
+        this.prototype.onicecandidate = noop;
       }
 
       // eslint-disable-next-line @typescript-eslint/class-methods-use-this -- mock
@@ -100,6 +140,8 @@ const noWebRTC: MakeBilibiliGreatThanEverBeforeModule = {
     for (const dc of rtcDcNames) {
       defineReadonlyProperty(unsafeWindow, dc, MockDataChannel);
     }
+
+    defineReadonlyProperty(unsafeWindow, 'RTCSessionDescription', MockRTCSessionDescription);
   }
 };
 
