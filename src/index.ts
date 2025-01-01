@@ -162,7 +162,7 @@ import disableAV1 from './modules/disable-av1';
       }
 
       if (abortFetch) {
-        logger.info('Fetch aborted', { fetchArgs: $fetchArgs, mockResponse });
+        logger.trace('Fetch aborted', { fetchArgs: $fetchArgs, mockResponse });
 
         return Promise.resolve(mockResponse ?? new Response());
       }
@@ -198,7 +198,7 @@ import disableAV1 from './modules/disable-av1';
       }
 
       if (xhrArgs === null) {
-        logger.info('XHR aborted', { $args });
+        logger.trace('XHR aborted', { $args });
         this.send = noop;
         this.setRequestHeader = noop;
         return;
