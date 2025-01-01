@@ -12,7 +12,7 @@ export function createMockClass(
         return instanceMethods[prop];
       }
       return (...args: unknown[]) => {
-        logger.log(`(new ${className})[${String(prop)}] called with arguments:`, args);
+        logger.trace(`(new ${className})[${String(prop)}] called with arguments:`, args);
       };
     }
   });
@@ -26,7 +26,7 @@ export function createMockClass(
         return staticMethods[prop];
       }
       return (...args: unknown[]) => {
-        logger.log(`window.${className}[${String(prop)}] called with arguments:`, args);
+        logger.trace(`window.${className}[${String(prop)}] called with arguments:`, args);
       };
     }
   });
