@@ -58,7 +58,7 @@ const noP2P: MakeBilibiliGreatThanEverBeforeModule = {
             value = String(value);
           }
           try {
-            const result = replaceP2P(value, getCDNDomain(), 'HTMLMediaElement.prototype.src');
+            const result = replaceP2P(value, getCDNDomain, 'HTMLMediaElement.prototype.src');
             value = typeof result === 'string' ? result : result.href;
           } catch (e) {
             logger.error('Failed to handle HTMLMediaElement.prototype.src setter', e, { value });
@@ -73,7 +73,7 @@ const noP2P: MakeBilibiliGreatThanEverBeforeModule = {
       try {
         xhrOpenArgs[1] = replaceP2P(
           xhrOpenArgs[1],
-          getCDNDomain(),
+          getCDNDomain,
           'XMLHttpRequest.prototype.open'
         );
       } catch (e) {
@@ -142,9 +142,9 @@ const noP2P: MakeBilibiliGreatThanEverBeforeModule = {
     onBeforeFetch((fetchArgs: [RequestInfo | URL, RequestInit?]) => {
       let input = fetchArgs[0];
       if (typeof input === 'string' || 'href' in input) {
-        input = replaceP2P(input, getCDNDomain(), 'fetch');
+        input = replaceP2P(input, getCDNDomain, 'fetch');
       } else if ('url' in input) {
-        input = new Request(replaceP2P(input.url, getCDNDomain(), 'fetch'), input);
+        input = new Request(replaceP2P(input.url, getCDNDomain, 'fetch'), input);
       } else {
         const _: never = input;
         // input = replaceP2P(String(input), cdnDomain);
@@ -163,7 +163,7 @@ function isP2PCDN(url: string) {
   return url.includes('.mcdn.bilivideo.cn') || url.includes('.szbdyd.com');
 }
 
-function replaceP2P(url: string | URL, cdnDomain: string, meta = ''): string | URL {
+function replaceP2P(url: string | URL, cdnDomainGetter: () => string, meta = ''): string | URL {
   try {
     if (typeof url === 'string') {
       // early bailout for better performance
@@ -178,9 +178,10 @@ function replaceP2P(url: string | URL, cdnDomain: string, meta = ''): string | U
     }
     const hostname = url.hostname;
     if (hostname.endsWith('.mcdn.bilivideo.cn')) {
-      url.hostname = cdnDomain;
+      const cdn = cdnDomainGetter();
+      url.hostname = cdn;
       url.port = '443';
-      logger.info(`P2P replaced: ${hostname} -> ${cdnDomain}`, { meta });
+      logger.info(`P2P replaced: ${hostname} -> ${cdn}`, { meta });
     } else if (hostname.endsWith('.szbdyd.com')) {
       const xy_usource = url.searchParams.get('xy_usource');
       if (xy_usource) {
