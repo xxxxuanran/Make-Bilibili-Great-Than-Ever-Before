@@ -14,6 +14,8 @@ function getCDNDomain() {
       if (matched.length > 0) {
         prevLocationHref = unsafeWindow.location.href;
         prevCdnDomains = matched;
+
+        logger.info('Get CDN domains from <head />', { matched });
       } else {
         logger.warn('Failed to get CDN domains from document.head.innerHTML, fallback to default CDN domain');
         prevLocationHref = unsafeWindow.location.href;
