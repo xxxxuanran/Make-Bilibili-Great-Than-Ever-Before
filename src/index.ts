@@ -16,9 +16,11 @@ import type { OnXhrOpenHook, XHRDetail, XHROpenArgs } from './types';
 import type { MakeBilibiliGreatThanEverBeforeHook, MakeBilibiliGreatThanEverBeforeModule, OnBeforeFetchHook } from './types';
 import { onDOMContentLoaded } from './utils/on-load-event';
 import disableAV1 from './modules/disable-av1';
+import defuseStorage from './modules/defuse-storage';
 
 ;((unsafeWindow) => {
   const modules: MakeBilibiliGreatThanEverBeforeModule[] = [
+    defuseStorage,
     defuseSpyware,
     disableAV1,
     enhanceLive,
