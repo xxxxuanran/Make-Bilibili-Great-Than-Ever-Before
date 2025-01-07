@@ -12,6 +12,7 @@ declare global {
 
 // const mcdnRegexp = /[\dxy]+\.mcdn\.bilivideo\.cn:\d+/;
 const qualityRegexp = /(live-bvc\/\d+\/live_\d+_\d+)_\w+/;
+const hevcRegexp = /(\d+)_(?:mini|pro)hevc/g;
 
 const enhanceLive: MakeBilibiliGreatThanEverBeforeModule = {
   name: 'enhance-live',
@@ -42,7 +43,7 @@ const enhanceLive: MakeBilibiliGreatThanEverBeforeModule = {
         if (qualityRegexp.test(url)) {
           const newUrl = url
             .replace(qualityRegexp, '$1')
-            .replaceAll(/(\d+)_(?:mini|pro)hevc/g, '$1');
+            .replaceAll(hevcRegexp, '$1');
 
           logger.info('force quality', url, '->', newUrl);
 
@@ -57,20 +58,22 @@ const enhanceLive: MakeBilibiliGreatThanEverBeforeModule = {
 
     const errorCounter = new ErrorCounter(1000 * 30);
 
-    onResponse((response) => {
-      if (response.url.includes('.m3u8') || response.url.includes('.m4s')) {
-        if (!response.ok) {
+    onResponse((resp) => {
+      if (resp.url.includes('.m3u8') || resp.url.includes('.m4s')) {
+        if (!resp.ok) {
+          logger.error('force quality', resp.url, resp.status);
           errorCounter.recordError();
         }
         if (forceHighestQuality && errorCounter.getErrorCount() >= 5) {
           forceHighestQuality = false;
+          logger.error('Force quality failed! Falling back');
           GM.notification(
             '[Make Bilibili Great Then Ever Before] 已为您自动切换至播放器上选择的清晰度.',
             '最高清晰度可能不可用'
           );
         }
       }
-      return response;
+      return resp;
     });
   }
 };

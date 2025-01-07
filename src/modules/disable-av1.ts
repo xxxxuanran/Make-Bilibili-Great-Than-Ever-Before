@@ -8,6 +8,8 @@ const disableAV1: MakeBilibiliGreatThanEverBeforeModule = {
     ((origCanPlayType) => {
       // eslint-disable-next-line sukka/class-prototype -- override native method
       HTMLMediaElement.prototype.canPlayType = function (type) {
+        logger.log('HTMLVideoElement.prototype.canPlayType called with', { type });
+
         if (type.includes('av01')) {
           logger.info('AV1 disabled!', { meta: 'HTMLVideoElement.prototype.canPlayType' });
           return '';
@@ -21,6 +23,8 @@ const disableAV1: MakeBilibiliGreatThanEverBeforeModule = {
       if (origIsTypeSupported == null) return false;
 
       unsafeWindow.MediaSource.isTypeSupported = function (type) {
+        logger.log('MediaSource.isTypeSupported called with', { type });
+
         if (type.includes('av01')) {
           logger.info('AV1 disabled!', { meta: 'MediaSource.isTypeSupported' });
           return false;

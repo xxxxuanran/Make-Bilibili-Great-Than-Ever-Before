@@ -16,7 +16,18 @@ export interface XHRDetail {
   response: unknown | null,
   lastResponseLength: number | null
 }
-export type XHROpenArgs = [method: string, url: string | URL, async: boolean, username?: string | null, password?: string | null] | [method: string, url: string | URL];
+export type XHROpenArgs =
+  | [
+    method: string,
+    url: string | URL,
+    async: boolean,
+    username?: string | null | undefined,
+    password?: string | null | undefined
+  ]
+  | [
+    method: string,
+    url: string | URL
+  ];
 
 /**
  * If `null` is returned, the fetch will be nullified.
