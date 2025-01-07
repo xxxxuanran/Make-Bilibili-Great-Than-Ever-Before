@@ -18,7 +18,7 @@ import { onDOMContentLoaded } from './utils/on-load-event';
 import disableAV1 from './modules/disable-av1';
 import defuseStorage from './modules/defuse-storage';
 
-;((unsafeWindow) => {
+; ((unsafeWindow) => {
   const modules: MakeBilibiliGreatThanEverBeforeModule[] = [
     defuseStorage,
     defuseSpyware,
@@ -180,6 +180,8 @@ import defuseStorage from './modules/defuse-storage';
 
   const xhrInstances = new WeakMap<XMLHttpRequest, XHRDetail>();
 
+  const XHRBefore = unsafeWindow.XMLHttpRequest.prototype;
+
   unsafeWindow.XMLHttpRequest = class extends unsafeWindow.XMLHttpRequest {
     open(...$args: XHROpenArgs) {
       const method = $args[0];
@@ -208,7 +210,7 @@ import defuseStorage from './modules/defuse-storage';
 
       xhrInstances.set(this, xhrDetails);
 
-      super.open.apply(this, xhrArgs as Parameters<XMLHttpRequest['open']>);
+      super.open(...(xhrArgs as Parameters<XMLHttpRequest['open']>));
 
       for (const onAfterXhrOpen of onAfterXhrOpenHooks) {
         try {
@@ -260,4 +262,17 @@ import defuseStorage from './modules/defuse-storage';
         : super.responseText;
     }
   };
+
+  unsafeWindow.XMLHttpRequest.prototype.open.toString = function () {
+    return XHRBefore.open.toString();
+  };
+  unsafeWindow.XMLHttpRequest.prototype.send.toString = function () {
+    return XHRBefore.send.toString();
+  };
+  // unsafeWindow.XMLHttpRequest.prototype.getResponseHeader.toString = function () {
+  //   return XHRBefore.getResponseHeader.toString();
+  // };
+  // unsafeWindow.XMLHttpRequest.prototype.getAllResponseHeaders.toString = function () {
+  //   return XHRBefore.getAllResponseHeaders.toString();
+  // };
 })(unsafeWindow);
