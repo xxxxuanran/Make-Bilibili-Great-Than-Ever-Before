@@ -11,6 +11,9 @@ importers:
       fake-indexeddb:
         specifier: ^6.0.0
         version: 6.0.0
+      flru:
+        specifier: ^1.0.2
+        version: 1.0.2
       foxts:
         specifier: ^1.1.4
         version: 1.1.4
@@ -824,6 +827,10 @@ packages:
 
   flatted@3.3.2:
     resolution: {integrity: sha512-AiwGJM8YcNOaobumgtng+6NHuOqC3A7MixFeDafM3X9cIUM+xUXoS5Vfgf+OihAYe20fxqNM9yPBXJzRtZ/4eA==}
+
+  flru@1.0.2:
+    resolution: {integrity: sha512-kWyh8ADvHBFz6ua5xYOPnUroZTT/bwWfrCeL0Wj1dzG4/YOmOcfJ99W8dOVyyynJN35rZ9aCOtHChqQovV7yog==}
+    engines: {node: '>=6'}
 
   foxts@1.1.4:
     resolution: {integrity: sha512-T1fi7+xcdMW/DyvyhBEWGI5dIDstd0QgjxALuEtFl+RP/s66b9j79pKAK8Zt2F3L5OdMb+La3iz16yH+hNcQAg==}
@@ -2106,6 +2113,8 @@ snapshots:
       keyv: 4.5.4
 
   flatted@3.3.2: {}
+
+  flru@1.0.2: {}
 
   foxts@1.1.4: {}
 

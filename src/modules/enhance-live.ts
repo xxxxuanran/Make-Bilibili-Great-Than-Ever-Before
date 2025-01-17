@@ -3,6 +3,7 @@ import type { MakeBilibiliGreatThanEverBeforeModule } from '../types';
 import { ErrorCounter } from '../utils/error-counter';
 import { getUrlFromRequest } from '../utils/get-url-from-request';
 import { tagged as css } from 'foxts/tagged';
+import flru from 'flru';
 
 declare global {
   interface Window {
@@ -19,6 +20,8 @@ const enhanceLive: MakeBilibiliGreatThanEverBeforeModule = {
   description: '增强直播（原画画质、其他修复）',
   onLive({ addStyle, onBeforeFetch, onResponse }) {
     let forceHighestQuality = true;
+
+    const urlMap = flru<string>(300);
 
     // 还得帮叔叔修 bug，唉
     addStyle(css`div[data-cy=EvaRenderer_LayerWrapper]:has(.player) { z-index: 999999; }`);
@@ -47,6 +50,8 @@ const enhanceLive: MakeBilibiliGreatThanEverBeforeModule = {
 
           logger.info('force quality', url, '->', newUrl);
 
+          urlMap.set(newUrl, url);
+
           fetchArgs[0] = newUrl;
         }
 
@@ -58,12 +63,11 @@ const enhanceLive: MakeBilibiliGreatThanEverBeforeModule = {
 
     const errorCounter = new ErrorCounter(1000 * 30);
 
-    onResponse((resp) => {
-      if (resp.url.includes('.m3u8') || resp.url.includes('.m4s')) {
-        if (!resp.ok) {
-          logger.error('force quality', resp.url, resp.status);
-          errorCounter.recordError();
-        }
+    onResponse((resp, fetchArgs) => {
+      if ((resp.url.includes('.m3u8') || resp.url.includes('.m4s')) && !resp.ok) {
+        logger.error('force quality fail', resp.url, resp.status);
+        errorCounter.recordError();
+
         if (forceHighestQuality && errorCounter.getErrorCount() >= 5) {
           forceHighestQuality = false;
           logger.error('Force quality failed! Falling back');
@@ -71,6 +75,12 @@ const enhanceLive: MakeBilibiliGreatThanEverBeforeModule = {
             '[Make Bilibili Great Then Ever Before] 已为您自动切换至播放器上选择的清晰度.',
             '最高清晰度可能不可用'
           );
+        }
+
+        // If we have old url, we fetch old quality again
+        if (urlMap.has(resp.url)) {
+          const oldUrl = urlMap.get(resp.url)!;
+          return fetch(oldUrl, fetchArgs[1]);
         }
       }
       return resp;

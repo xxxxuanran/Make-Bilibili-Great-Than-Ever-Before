@@ -33,7 +33,8 @@ export type XHROpenArgs =
  * If `null` is returned, the fetch will be nullified.
  * If a `Response` is returned, the fetch will be mocaked with the response.
  */
-export type OnBeforeFetchHook = (fetchArgs: [requestInfo: RequestInfo | URL, requestInit?: RequestInit]) => [requestInfo: RequestInfo | URL, requestInit?: RequestInit] | null | Response;
+export type FetchArgs = [requestInfo: RequestInfo | URL, requestInit?: RequestInit];
+export type OnBeforeFetchHook = (fetchArgs: FetchArgs) => FetchArgs | null | Response;
 /**
  * If `null` is returned, the XMLHttpRequest will be nullified.
  */
@@ -42,7 +43,7 @@ export type OnXhrOpenHook = (xhrOpenArgs: XHROpenArgs, xhr: XMLHttpRequest) => X
 export interface MakeBilibiliGreatThanEverBeforeHook {
   addStyle(this: void, css: string): void,
   onBeforeFetch(this: void, cb: OnBeforeFetchHook): void,
-  onResponse(this: void, cb: (response: Response) => Response): void,
+  onResponse(this: void, cb: (response: Response, fetchArgs: FetchArgs) => Promise<Response> | Response): void,
   onXhrOpen(this: void, cb: OnXhrOpenHook): void,
   onAfterXhrOpen(this: void, cb: (xhr: XMLHttpRequest) => void): void,
   onXhrResponse(this: void, cb: (method: string, url: string | URL, response: unknown, xhr: XMLHttpRequest) => unknown): void,
