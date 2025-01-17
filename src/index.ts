@@ -38,7 +38,7 @@ import defuseStorage from './modules/defuse-storage';
 
   const styles: string[] = [];
   const onBeforeFetchHooks = new Set<OnBeforeFetchHook>();
-  const onResponseHooks = new Set<(response: Response, finalFetchArgs: FetchArgs) => Response | Promise<Response>>();
+  const onResponseHooks = new Set<(response: Response, finalFetchArgs: FetchArgs, $fetch: typeof fetch) => Response | Promise<Response>>();
   const onXhrOpenHooks = new Set<OnXhrOpenHook>();
   const onAfterXhrOpenHooks = new Set<(xhr: XMLHttpRequest) => void>();
   const onXhrResponseHooks = new Set<(method: string, url: string | URL, response: unknown, xhr: XMLHttpRequest) => unknown>();
@@ -172,7 +172,7 @@ import defuseStorage from './modules/defuse-storage';
       let response = await Reflect.apply($fetch, this, $fetchArgs);
       for (const onResponse of onResponseHooks) {
         // eslint-disable-next-line no-await-in-loop -- hook
-        response = await onResponse(response, $fetchArgs);
+        response = await onResponse(response, $fetchArgs, $fetch);
       }
       return response;
     };

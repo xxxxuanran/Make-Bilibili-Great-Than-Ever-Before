@@ -43,7 +43,7 @@ export type OnXhrOpenHook = (xhrOpenArgs: XHROpenArgs, xhr: XMLHttpRequest) => X
 export interface MakeBilibiliGreatThanEverBeforeHook {
   addStyle(this: void, css: string): void,
   onBeforeFetch(this: void, cb: OnBeforeFetchHook): void,
-  onResponse(this: void, cb: (response: Response, fetchArgs: FetchArgs) => Promise<Response> | Response): void,
+  onResponse(this: void, cb: (response: Response, fetchArgs: FetchArgs, $fetch: typeof fetch) => Promise<Response> | Response): void,
   onXhrOpen(this: void, cb: OnXhrOpenHook): void,
   onAfterXhrOpen(this: void, cb: (xhr: XMLHttpRequest) => void): void,
   onXhrResponse(this: void, cb: (method: string, url: string | URL, response: unknown, xhr: XMLHttpRequest) => unknown): void,

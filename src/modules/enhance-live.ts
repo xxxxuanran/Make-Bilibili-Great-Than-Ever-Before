@@ -63,7 +63,7 @@ const enhanceLive: MakeBilibiliGreatThanEverBeforeModule = {
 
     const errorCounter = new ErrorCounter(1000 * 30);
 
-    onResponse((resp, fetchArgs) => {
+    onResponse((resp, fetchArgs, $fetch) => {
       if ((resp.url.includes('.m3u8') || resp.url.includes('.m4s')) && !resp.ok) {
         logger.error('force quality fail', resp.url, resp.status);
         errorCounter.recordError();
@@ -80,7 +80,7 @@ const enhanceLive: MakeBilibiliGreatThanEverBeforeModule = {
         // If we have old url, we fetch old quality again
         if (urlMap.has(resp.url)) {
           const oldUrl = urlMap.get(resp.url)!;
-          return fetch(oldUrl, fetchArgs[1]);
+          return $fetch(oldUrl, fetchArgs[1]);
         }
       }
       return resp;
