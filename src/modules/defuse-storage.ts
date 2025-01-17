@@ -12,11 +12,12 @@ const DEFUSED = new Set([
   'MIRROR_TRACK_V2',
   'pbp3',
   'BILI_MIRROR_REPORT_POOL',
+  'BILI_MIRROR_RESOURCE_TIME',
   'bp_nc_loader_config'
 ]);
 
 const defusedPatterm = retrie([
-  'MIRROR_TRACK', '__LOG', 'BILI_MIRROR_REPORT_POOL', 'reporter-pb',
+  'MIRROR_TRACK', '__LOG', 'BILI_MIRROR_REPORT_POOL', 'BILI_MIRROR_RESOURCE_TIME', 'reporter-pb',
   'pbp3',
   'pcdn', 'nc_loader'
 ]).toRe();
