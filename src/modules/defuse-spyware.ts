@@ -3,6 +3,13 @@ import { getUrlFromRequest } from '../utils/get-url-from-request';
 import { createMockClass } from '../utils/mock-class';
 import { defineReadonlyProperty } from '../utils/define-readonly-property';
 import type { MakeBilibiliGreatThanEverBeforeModule } from '../types';
+import { createRetrieKeywordFilter } from 'foxts/retrie';
+
+const shouldDefuseUrl = createRetrieKeywordFilter([
+  'data.bilibili.com',
+  'cm.bilibili.com',
+  'api.bilibili.com/x/internal/gaia-gateway/ExClimbWuzhi'
+]);
 
 const defuseSpyware: MakeBilibiliGreatThanEverBeforeModule = {
   name: 'defuse-spyware',
@@ -49,7 +56,7 @@ const defuseSpyware: MakeBilibiliGreatThanEverBeforeModule = {
     onBeforeFetch((fetchArgs) => {
       const url = getUrlFromRequest(fetchArgs[0]);
 
-      if (typeof url === 'string' && url.includes('data.bilibili.com')) {
+      if (typeof url === 'string' && shouldDefuseUrl(url)) {
         return new Response();
       };
 
@@ -62,10 +69,7 @@ const defuseSpyware: MakeBilibiliGreatThanEverBeforeModule = {
         url = url.href;
       }
 
-      if (url.includes('data.bilibili.com')) {
-        return null;
-      }
-      if (url.includes('api.bilibili.com/x/internal/gaia-gateway/ExClimbWuzhi')) {
+      if (shouldDefuseUrl(url)) {
         return null;
       }
 
