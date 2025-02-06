@@ -1,4 +1,5 @@
 import { noop } from 'foxts/noop';
+import { createRetrieKeywordFilter } from 'foxts/retrie';
 import { logger } from '../logger';
 import type { MakeBilibiliGreatThanEverBeforeModule } from '../types';
 import { defineReadonlyProperty } from '../utils/define-readonly-property';
@@ -34,6 +35,11 @@ function getCDNDomain() {
     ? prevCdnDomains[0]
     : prevCdnDomains[Math.floor(Math.random() * prevCdnDomains.length)];
 }
+
+const isP2PCDN = createRetrieKeywordFilter([
+  '.mcdn.bilivideo.cn',
+  '.szbdyd.com'
+]);
 
 const noP2P: MakeBilibiliGreatThanEverBeforeModule = {
   name: 'no-p2p',
@@ -160,10 +166,6 @@ const noP2P: MakeBilibiliGreatThanEverBeforeModule = {
 };
 
 export default noP2P;
-
-function isP2PCDN(url: string) {
-  return url.includes('.mcdn.bilivideo.cn') || url.includes('.szbdyd.com');
-}
 
 function replaceP2P(url: string | URL, cdnDomainGetter: () => string, meta = ''): string | URL {
   try {
