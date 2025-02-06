@@ -37,6 +37,8 @@ const noAd: MakeBilibiliGreatThanEverBeforeModule = {
     }
      */
     addStyle(css`
+      .adblock-tips,
+      .feed-card:has(.bili-video-card>div:empty),
       a[href*="cm.bilibili.com"],
       .desktop-download-tip,
       .ad-report {
