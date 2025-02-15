@@ -7,7 +7,7 @@ import { retrie } from 'foxts/retrie';
 import { createFakeNativeFunction } from '../utils/fake-native-function';
 import { noop } from 'foxts/noop';
 
-const DEFUSED = new Set([
+const DEFUSED_INDEXEDDB = new Set([
   'PLAYER__LOG',
   'MIRROR_TRACK_V2',
   'pbp3',
@@ -19,14 +19,15 @@ const DEFUSED = new Set([
 const defusedPatterm = retrie([
   'MIRROR_TRACK', '__LOG', 'BILI_MIRROR_REPORT_POOL', 'BILI_MIRROR_RESOURCE_TIME', 'reporter-pb',
   'pbp3',
-  'pcdn', 'nc_loader'
+  'pcdn', 'nc_loader',
+  'iconify'
 ]).toRe();
 
 const defuseStorage: MakeBilibiliGreatThanEverBeforeModule = {
   name: 'disable-av1',
   description: '防止叔叔用 AV1 格式燃烧你的 CPU 并省下棺材钱',
   any() {
-    DEFUSED.forEach((name) => {
+    DEFUSED_INDEXEDDB.forEach((name) => {
       const req = mockIndexedDB.deleteDatabase(name);
       req.addEventListener('success', () => {
         logger.info('IndexedDB deleted!', { name });
