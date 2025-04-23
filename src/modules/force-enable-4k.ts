@@ -9,6 +9,18 @@ function hook() {
     localStorage.setItem('bilibili_player_force_hdr', '1');
   }
 
+  ((sessionStorageGetItem) => {
+    sessionStorage.getItem = function (key) {
+      // 部分視頻解碼錯誤後會強制全局回退，禁用所有HEVC內容
+      // 此hook禁用對應邏輯
+      if (key === 'enableHEVCError') {
+        return null;
+      }
+      return Reflect.apply(sessionStorageGetItem, this, [key]);
+    };
+    // eslint-disable-next-line @typescript-eslint/unbound-method -- cache origin method
+  })(sessionStorage.getItem);
+
   // Bilibili use User-Agent to determine if the 4K should be avaliable, we simply overrides UA
   defineReadonlyProperty(unsafeWindow.navigator, 'userAgent', 'Mozilla/5.0 (Macintosh; Intel Mac OS X 14_7_5) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/18.3 Safari/605.1.15');
 }
