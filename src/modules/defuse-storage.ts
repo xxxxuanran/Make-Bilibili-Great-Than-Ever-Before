@@ -70,7 +70,7 @@ const defuseStorage: MakeBilibiliGreatThanEverBeforeModule = {
             logger.trace('localStorage.setItem mocked:', { key, value });
             store.set(key, value);
           } else {
-            logger.trace('localStorage.setItem:', { key, value });
+            // logger.trace('localStorage.setItem:', { key, value });
             orignalLocalStorage.setItem(key, value);
           }
         },
@@ -81,7 +81,7 @@ const defuseStorage: MakeBilibiliGreatThanEverBeforeModule = {
             return value;
           }
 
-          logger.trace('localStorage.getItem:', { key });
+          // logger.trace('localStorage.getItem:', { key });
           return orignalLocalStorage.getItem(key);
         },
         removeItem(key) {
@@ -94,7 +94,7 @@ const defuseStorage: MakeBilibiliGreatThanEverBeforeModule = {
             logger.trace('localStorage.removeItem mocked:', { key });
             store.delete(key);
           } else {
-            logger.trace('localStorage.removeItem:', { key });
+            // logger.trace('localStorage.removeItem:', { key });
             orignalLocalStorage.removeItem(key);
           }
         },
