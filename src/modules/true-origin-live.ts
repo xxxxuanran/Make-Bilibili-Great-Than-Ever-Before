@@ -59,7 +59,7 @@ function getRequestFile(url: string) {
 
 const trueOriginLive: MakeBilibiliGreatThanEverBeforeModule = {
   name: 'true-origin-live',
-  description: '获取直播真原画（无二压）',
+  description: '直播真原画',
 
   onLive({ onBeforeFetch, onResponse }) {
     // 创建缓存存储
@@ -102,6 +102,12 @@ const trueOriginLive: MakeBilibiliGreatThanEverBeforeModule = {
         // 更新内置 CN01 节点
         if (cdnHostPattern.Bili.test(cdnHost)) cdnHostMap.Bili = cdnHost;
 
+        // Aliyun 可能为二次转推，延迟多约 2s
+        // Tencent 晚高峰卡顿严重
+        if (cdnHostPattern.Aliyun.test(cdnHost) || cdnHostPattern.Tencent.test(cdnHost)) {
+          cdnHost = Math.random() > 0.5 ? cdnHostMap.Baidu : cdnHostMap.Huawei;
+        }
+
         // 获取 stream_name
         const originStreamName = getOriginStreamName(urlString);
         if (!originStreamName) return fetchArgs;
@@ -112,38 +118,18 @@ const trueOriginLive: MakeBilibiliGreatThanEverBeforeModule = {
           logger.info('Caching stream name :', originStreamName);
         }
 
-        const isM3U8 = urlString.includes('.m3u8');
-        // 非首次请求则从缓存获取
-        if (isM3U8 && streamNameCache.has(roomId)) {
-          const m3u8Url = buildStreamUrl(cdnHostMap.Bili, streamNameCache.get(roomId)!, 'index.m3u8');
-          logger.info('Using cached stream name for m3u8 :', m3u8Url);
-          fetchArgs[0] = m3u8Url;
-          return fetchArgs;
-        }
-
-        // Aliyun 可能为二次转推，延迟多约 2s
-        // Tencent 晚高峰卡顿严重
-        if (cdnHostPattern.Aliyun.test(cdnHost) || cdnHostPattern.Tencent.test(cdnHost)) {
-          cdnHost = Math.random() > 0.5 ? cdnHostMap.Baidu : cdnHostMap.Huawei;
-        }
-
         // 提取请求文件
         const requestFile = getRequestFile(urlString);
 
-        // m4s 直接从缓存取 stream_name
-        const canSkip = !isM3U8 && streamNameCache.has(roomId);
-        if (canSkip) {
-          const host = /h\d+\.m4s/.test(requestFile) ? cdnHostMap.Bili : cdnHost;
+        // 构建新 URL
+        if (streamNameCache.has(roomId)) {
+          const host = /^\D/.test(requestFile) ? cdnHostMap.Bili : cdnHost;
           const newUrl = buildStreamUrl(host, streamNameCache.get(roomId)!, requestFile);
-          logger.info('Using cached stream for m4s :', newUrl);
+          logger.info('Using cached stream :', newUrl);
           fetchArgs[0] = newUrl;
           return fetchArgs;
         }
 
-        // 构建新URL
-        const newUrl = buildStreamUrl(cdnHostMap.Bili, originStreamName, requestFile);
-        logger.info('Redirecting to origin quality :', originStreamName);
-        fetchArgs[0] = newUrl;
         return fetchArgs;
       } catch (e) {
         logger.error('处理直播真原画时出错', e);
