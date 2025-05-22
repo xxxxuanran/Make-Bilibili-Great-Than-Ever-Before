@@ -1,7 +1,6 @@
 import { noop } from 'foxts/noop';
 import { logger } from './logger';
 import defuseSpyware from './modules/defuse-spyware';
-import enhanceLive from './modules/enhance-live';
 import fixCopyInCV from './modules/fix-copy-in-cv';
 import noAd from './modules/no-ad';
 import noP2P from './modules/no-p2p';
@@ -11,6 +10,7 @@ import optimizeStory from './modules/optimize-story';
 import playerVideoFit from './modules/player-video-fit';
 import removeBlackBackdropFilter from './modules/remove-black-backdrop-filter';
 import removeUselessUrlParams from './modules/remove-useless-url-params';
+import trueOriginLive from './modules/true-origin-live';
 import useSystemFonts from './modules/use-system-fonts';
 import type { FetchArgs, OnXhrOpenHook, XHRDetail, XHROpenArgs } from './types';
 import type { MakeBilibiliGreatThanEverBeforeHook, MakeBilibiliGreatThanEverBeforeModule, OnBeforeFetchHook } from './types';
@@ -24,7 +24,6 @@ import forceEnable4K from './modules/force-enable-4k';
     defuseStorage,
     defuseSpyware,
     disableAV1,
-    enhanceLive,
     fixCopyInCV,
     forceEnable4K,
     noAd,
@@ -35,6 +34,7 @@ import forceEnable4K from './modules/force-enable-4k';
     playerVideoFit,
     removeBlackBackdropFilter,
     removeUselessUrlParams,
+    trueOriginLive,
     useSystemFonts
   ];
 

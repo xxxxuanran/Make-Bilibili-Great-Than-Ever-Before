@@ -6,6 +6,7 @@ module.exports = require('eslint-config-sukka').sukka({}, {
       'error',
       'window', // use unsafeWindow instead
       'console' // use logger
-    ]
+    ],
+    '@stylistic/js/linebreak-style': 'off'
   }
 });
