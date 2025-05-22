@@ -43,7 +43,7 @@ function getRoomId() {
 }
 
 function getOriginStreamName(url: string) {
-  const streamName = /\/live-bvc\/\d+\/(live_[^/]+)/.exec(url)?.[1];
+  const streamName = /\/live-bvc\/\d+\/(live_[^./]+)/.exec(url)?.[1];
   const suffix = /suffix=([^&]+)/.exec(url)?.[1];
   let originStreamName = streamName;
   if (suffix && suffix !== 'origin') {
