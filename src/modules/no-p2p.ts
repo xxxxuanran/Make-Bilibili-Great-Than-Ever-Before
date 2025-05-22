@@ -1,8 +1,8 @@
-import { noop } from 'foxts/noop';
+// import { noop } from 'foxts/noop';
 import { createRetrieKeywordFilter } from 'foxts/retrie';
 import { logger } from '../logger';
 import type { MakeBilibiliGreatThanEverBeforeModule } from '../types';
-import { defineReadonlyProperty } from '../utils/define-readonly-property';
+// import { defineReadonlyProperty } from '../utils/define-readonly-property';
 
 const rBackupCdn = /(?:up|cn-)[\w-]+\.bilivideo\.com/g;
 
@@ -45,17 +45,17 @@ const noP2P: MakeBilibiliGreatThanEverBeforeModule = {
   name: 'no-p2p',
   description: '防止叔叔用 P2P CDN 省下纸钱',
   any({ onXhrOpen, onBeforeFetch, onXhrResponse }) {
-    class MockPCDNLoader { }
+    // class MockPCDNLoader { }
 
-    class MockBPP2PSDK {
-      on = noop;
-    }
+    // class MockBPP2PSDK {
+    //   on = noop;
+    // }
 
-    class MockSeederSDK { }
+    // class MockSeederSDK { }
 
-    defineReadonlyProperty(unsafeWindow, 'PCDNLoader', MockPCDNLoader);
-    defineReadonlyProperty(unsafeWindow, 'BPP2PSDK', MockBPP2PSDK);
-    defineReadonlyProperty(unsafeWindow, 'SeederSDK', MockSeederSDK);
+    // defineReadonlyProperty(unsafeWindow, 'PCDNLoader', MockPCDNLoader);
+    // defineReadonlyProperty(unsafeWindow, 'BPP2PSDK', MockBPP2PSDK);
+    // defineReadonlyProperty(unsafeWindow, 'SeederSDK', MockSeederSDK);
 
     // Patch new Native Player
     (function (HTMLMediaElementPrototypeSrcDescriptor) {

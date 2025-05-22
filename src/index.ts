@@ -1,10 +1,10 @@
 import { noop } from 'foxts/noop';
 import { logger } from './logger';
-import defuseSpyware from './modules/defuse-spyware';
+// import defuseSpyware from './modules/defuse-spyware';
 import fixCopyInCV from './modules/fix-copy-in-cv';
 import noAd from './modules/no-ad';
 import noP2P from './modules/no-p2p';
-import noWebRTC from './modules/no-webtrc';
+// import noWebRTC from './modules/no-webtrc';
 import optimizeHomepage from './modules/optimize-homepage';
 import optimizeStory from './modules/optimize-story';
 import playerVideoFit from './modules/player-video-fit';
@@ -22,13 +22,13 @@ import forceEnable4K from './modules/force-enable-4k';
 ; ((unsafeWindow) => {
   const modules: MakeBilibiliGreatThanEverBeforeModule[] = [
     defuseStorage,
-    defuseSpyware,
+    // defuseSpyware,
     disableAV1,
     fixCopyInCV,
     forceEnable4K,
     noAd,
     noP2P,
-    noWebRTC,
+    // noWebRTC,
     optimizeHomepage,
     optimizeStory,
     playerVideoFit,

@@ -1,6 +1,5 @@
 import { noop, trueFn } from 'foxts/noop';
 import { getUrlFromRequest } from '../utils/get-url-from-request';
-import { createMockClass } from '../utils/mock-class';
 import { defineReadonlyProperty } from '../utils/define-readonly-property';
 import type { MakeBilibiliGreatThanEverBeforeModule } from '../types';
 import { createRetrieKeywordFilter } from 'foxts/retrie';
@@ -17,17 +16,37 @@ const defuseSpyware: MakeBilibiliGreatThanEverBeforeModule = {
   any({ onBeforeFetch, onXhrOpen }) {
     defineReadonlyProperty(unsafeWindow.navigator, 'sendBeacon', trueFn);
 
-    const SentryHub = createMockClass('SentryHub');
+    class SentryHub {
+      bindClient = noop;
+    }
+
+    class MReporter {
+      appear = noop;
+      click = noop;
+      tech = noop;
+      pv = noop;
+      import = { auto: noop };
+      report = noop;
+    }
+
+    class ReporterPb {
+      click = {};
+      custom = {};
+      exposure = {};
+      report = {};
+      tech = {};
+      pv = {};
+    }
+
+    class EmptyClass { }
 
     const fakeSentry = {
       SDK_NAME: 'sentry.javascript.browser',
-      SDK_VERSION: '0.0.1145141919810',
-      BrowserClient: createMockClass('Sentry.BrowserClient'),
+      SDK_VERSION: '0.0.0',
+      BrowserClient: EmptyClass,
       Hub: SentryHub,
       Integrations: {
-        Vue: createMockClass('Sentry.Integrations.Vue'),
-        GlobalHandlers: createMockClass('Sentry.Integrations.GlobalHandlers'),
-        InboundFilters: createMockClass('Sentry.Integrations.InboundFilters')
+        Vue: EmptyClass
       },
       init: noop,
       configureScope: noop,
@@ -40,15 +59,30 @@ const defuseSpyware: MakeBilibiliGreatThanEverBeforeModule = {
       setUser: noop,
       wrap: noop
     };
-
-    defineReadonlyProperty(unsafeWindow, 'Sentry', fakeSentry);
-    defineReadonlyProperty(unsafeWindow, 'MReporter', createMockClass('MReporter'));
-    defineReadonlyProperty(unsafeWindow, 'ReporterPb', createMockClass('ReporterPb'));
-    defineReadonlyProperty(unsafeWindow, '__biliUserFp__', {
-      init: noop,
-      queryUserLog() {
-        return [];
-      }
+    Object.defineProperty(unsafeWindow, 'Sentry', {
+      value: fakeSentry,
+      writable: false,
+      enumerable: false
+    });
+    Object.defineProperty(unsafeWindow, 'MReporter', {
+      value: MReporter,
+      writable: false,
+      enumerable: false
+    });
+    Object.defineProperty(unsafeWindow, 'ReporterPb', {
+      value: ReporterPb,
+      writable: false,
+      enumerable: false
+    });
+    Object.defineProperty(unsafeWindow, '__biliUserFp__', {
+      value: {
+        init: noop,
+        queryUserLog() {
+          return [];
+        }
+      },
+      writable: false,
+      enumerable: false
     });
     defineReadonlyProperty(unsafeWindow, '__USER_FP_CONFIG__', undefined);
     defineReadonlyProperty(unsafeWindow, '__MIRROR_CONFIG__', undefined);
